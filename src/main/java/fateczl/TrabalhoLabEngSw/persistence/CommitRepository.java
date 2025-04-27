@@ -1,9 +1,9 @@
 package fateczl.TrabalhoLabEngSw.persistence;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaRepository; 
 
-import fateczl.TrabalhoLabEngSw.model.Commit;
+import fateczl.TrabalhoLabEngSw.model.Commite;
 
-public interface CommitRepository extends JpaRepository<Commit, Long> {
+public interface CommitRepository extends JpaRepository<Commite, Long> {
 
 }

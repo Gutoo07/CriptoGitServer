@@ -30,11 +30,15 @@ public class Diretorio {
 	@Column(name = "nome", length = 50, nullable = false)
 	private String nome;
 	
-	@ManyToOne(targetEntity = Commit.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
 	@JoinColumn(name="commiteId", nullable = false)
-	private Commit commit;
+	private Commite commit;
 	
 	@ManyToOne(targetEntity = Diretorio.class, fetch = FetchType.LAZY)
-	@JoinColumn(name="diretorioPaiId", nullable = false)
+	@JoinColumn(name="diretorioPaiId", nullable = true)
 	private Diretorio diretorioPai;
+	
+	@ManyToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "repositorioId", nullable = false)
+	private Repositorio repositorio;
 }

@@ -32,7 +32,7 @@ public class Usuario {
 	@Column(name = "senha", length = 100, nullable = false)
 	private String senha;
 	@Lob
-	@Column(name = "chavePublica", nullable = false)
+	@Column(name = "chavePublica", nullable = true)
 	private byte[] chavePublica;
 	@Transient
 	private byte[] chavePrivada;

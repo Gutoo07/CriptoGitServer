@@ -22,8 +22,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-public class Commit {
+@EqualsAndHashCode(of="id")
+public class Commite {
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
@@ -35,7 +35,7 @@ public class Commit {
 	@JoinColumn(name = "usuarioAutorId", nullable = false)
 	private Usuario autor;
 	
-	@OneToOne(targetEntity = Commit.class, fetch = FetchType.LAZY)
-	@JoinColumn(name="commite_id", nullable = false)
-	private Commit anterior;
+	@OneToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
+	@JoinColumn(name="commite_id", nullable = true)
+	private Commite anterior;
 }
