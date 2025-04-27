@@ -12,7 +12,7 @@ go
 use TrabalhoLabEngSw
 --------------
 
-create table usuario (
+drop table usuario (
 	id		int				not null,
 	usuario	varchar(100)	not null,
 	senha	varchar(100)	not null,

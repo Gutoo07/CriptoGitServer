@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -32,7 +34,8 @@ public class UsuarioService {
 		PrivateKey chavePrivada = keyPair.getPrivate();
 		byte[] chavePrivadaArray = chavePrivada.getEncoded();
 		
-		salvarChaveEmArquivo("chavePrivada", chavePrivadaArray);
+		String nomeArquivoChavePrivada = "ChavePrivada-"+novo.getNickname();
+		salvarChaveEmArquivo(nomeArquivoChavePrivada, chavePrivadaArray);
 
 		rep.save(novo);
 	}
@@ -49,7 +52,12 @@ public class UsuarioService {
 	}
 	
 	public void salvarChaveEmArquivo(String nomeArquivo, byte[] chaveByteArray) throws FileNotFoundException, IOException {
-		File file = new File(nomeArquivo);
+		/*Na pasta "chaves" no diretorio do projeto*/
+		Path currentDirectoryPath = FileSystems.getDefault().getPath("");
+		String currentDirectoryName = currentDirectoryPath.toAbsolutePath().toString();
+		System.out.println(currentDirectoryName);
+		new File(currentDirectoryName+"/chaves").mkdirs();
+		File file = new File(currentDirectoryName+"/chaves/"+nomeArquivo);
 		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
 			fileOutputStream.write(chaveByteArray);
 		}
