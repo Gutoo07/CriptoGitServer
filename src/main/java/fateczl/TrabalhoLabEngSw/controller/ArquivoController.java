@@ -94,13 +94,6 @@ public class ArquivoController {
 		
 		return "/home/index";
 	}
-	@PostMapping("/aaa")
-	public String upload() {
-		System.out.println("porra de upload");
-		return "home/index";
-	}
-	@GetMapping("/upload")
-	public String carregaPaginaUpload() {
-		return "arquivo/upload";
-	}
+
+
 }
