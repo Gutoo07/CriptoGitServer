@@ -53,7 +53,7 @@ public class ArquivoController {
 		System.out.println(arquivo.getOriginalFilename());
 		System.out.println(arquivo.getContentType());
 		
-		Usuario autor = userRep.findByEmail("email@email.com");
+		Usuario autor = userRep.findByEmail("guto@email.com");
 		
 		Repositorio repositorio = new Repositorio();
 		repositorio.setNome("Repositorio teste");
@@ -94,6 +94,9 @@ public class ArquivoController {
 		
 		return "/home/index";
 	}
-
+	@GetMapping("/upload")
+ 	public String carregaPaginaUpload() {
+ 		return "arquivo/upload";
+ 	}
 
 }
