@@ -88,12 +88,12 @@ create table usuario_repositorio (
 
 go
 
-select * from usuario
-select * from commite
-select * from repositorio
+select id as usuario, chave_publica, email, nickname, senha from usuario
+select id as commite, commite_id as commit_anterior, usuario_autor_id from commite
+select id as repositorio, nome from repositorio
 select * from blob
-select * from arquivo
-select * from diretorio
+select id as arquivo, nome, blob_Sha1, diretorio_pai_id from arquivo
+select id as diretorio, nome, commite_id, diretorio_pai_id, repositorio_id from diretorio
 
 go
 

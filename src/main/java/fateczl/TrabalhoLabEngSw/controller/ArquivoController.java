@@ -67,7 +67,8 @@ public class ArquivoController {
 		System.out.println(bytes);
 		blob.setConteudo(bytes);		
         MessageDigest md = MessageDigest.getInstance("SHA1");
-        BigInteger bigInt = new BigInteger(1, bytes);
+        byte[] sha1bytes = md.digest(bytes);
+        BigInteger bigInt = new BigInteger(1, sha1bytes);
         String sha1 = bigInt.toString(16);
         System.out.println(sha1);
         blob.setSha1(sha1);
