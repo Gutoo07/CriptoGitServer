@@ -102,7 +102,7 @@ public class ArquivoController {
 		return "/home/index";
 	}*/
 	@PostMapping("/arquivo/uploadArquivo")
-	public String upload(@RequestParam("arquivo") MultipartFile[] arquivos, @RequestParam("msg") String msg,
+	public ModelAndView upload(@RequestParam("arquivo") MultipartFile[] arquivos, @RequestParam("msg") String msg,
 			@CookieValue(name = "user_id", defaultValue = "") String user_id) throws IOException, NoSuchAlgorithmException {
 
 
@@ -113,9 +113,6 @@ public class ArquivoController {
         Optional<Repositorio> repositorioOpt = repRep.findById(1L);
         Repositorio repositorio = repositorioOpt.get();
         
-        System.out.println("COMMIT");
-        System.out.println("Autor_id:"+autor.getId());
-        System.out.println("Repositorio_id:"+repositorio.getId());
         Commite commitAnterior = commitRep.findLastCommit();
         Commite commit = new Commite();
         commit.setAutor(autor);
@@ -128,11 +125,13 @@ public class ArquivoController {
         }
         commitRep.save(commit);
         
+		Diretorio diretorio = new Diretorio();
+		diretorio.setNome("Tree node");		
+		diretorio.setCommit(commit);
+		dirRep.save(diretorio);
+        
+        
 	    for (MultipartFile arquivo : arquivos) {
-	        System.out.println(arquivo.getOriginalFilename());
-	        System.out.println(arquivo.getContentType());     
-
-	        System.out.println("BLOB");
 	        Blob blob = new Blob();
 	        byte[] bytes = arquivo.getBytes();
 	        blob.setConteudo(bytes);
@@ -142,22 +141,27 @@ public class ArquivoController {
 	        BigInteger bigInt = new BigInteger(1, sha1bytes);
 	        String sha1 = bigInt.toString(16);
 	        blob.setSha1(sha1);
-	        blobRep.save(blob);	        
 	        
-			Diretorio diretorio = new Diretorio();
-			diretorio.setNome("Tree node");		
-			diretorio.setCommit(commit);
-			dirRep.save(diretorio);
-	        
-	        System.out.println("ARQUIVO");
 	        Arquivo novo = new Arquivo();
-	        novo.setNome(arquivo.getOriginalFilename());
-	        novo.setBlob(blob);
-	        //novo.setCommite(commit);
-	        novo.setDiretorioPai(diretorio);
+	        /*Testar se o arquivo upado ja existe ou foi alterado, para salvar ele ou nao*/
+	        if (blobRep.findBySha1(sha1) == null) {
+	        	/*Arquivo novo/diferente: salva no bd*/
+		        blobRep.save(blob);	        
+		        
+		        novo.setNome(arquivo.getOriginalFilename());
+		        novo.setBlob(blob);
+		        novo.setDiretorioPai(diretorio);
+	        } else {
+	        	/*Arquivo existente: salva apenas a referencia do ultimo*/
+	        	Blob antigo = blobRep.findBySha1(sha1);
+	        	/*Pega o nome do arquivo antigo*/
+		        novo.setNome(arquivo.getOriginalFilename());
+		        novo.setBlob(antigo);
+	        	novo.setDiretorioPai(diretorio);
+	        }   
 	        arqRep.save(novo);
 	    }	 
-	    return "redirect:/home/index";
+	    return index(autor);
 	}
 
 
@@ -181,11 +185,18 @@ public class ArquivoController {
 	
 	public List<Arquivo> findLastByRepositorio(Long repId) {
 		Commite ultimoCommit = commitRep.findLastCommitByRepositorio(repId);
-		return arqRep.findByCommiteAndRepositorio(ultimoCommit.getId(), repId);
+		if (ultimoCommit != null) {
+			return arqRep.findByCommiteAndRepositorio(ultimoCommit.getId(), repId);
+		} else {
+			return null;
+		}
 	}
-	
-
-	
+	public ModelAndView index(Usuario usuario) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("home/index");
+		mv.addObject("usuario", usuario);
+		return mv;
+	}
 	
 
 }

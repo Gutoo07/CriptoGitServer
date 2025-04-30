@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import fateczl.TrabalhoLabEngSw.model.Arquivo;
+import fateczl.TrabalhoLabEngSw.model.Blob;
 
 public interface ArquivoRepository extends JpaRepository<Arquivo, Long> {
 
@@ -19,4 +20,6 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Long> {
 			+ "on c.repositorio_origem_id = r.id\r\n"
 			+ "where c.id = :commiteId and r.id=:repositorioId")
 	public List<Arquivo> findByCommiteAndRepositorio(Long commiteId, Long repositorioId);
+	
+	public Arquivo findByBlob(Blob blob);
 }

@@ -31,7 +31,7 @@ public class Arquivo {
 	@Column(name = "nome", length = 100, nullable = false)
 	private String nome;
 	
-	@OneToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
+	@ManyToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "blobId", nullable = false)
 	private Blob blob;
 	
