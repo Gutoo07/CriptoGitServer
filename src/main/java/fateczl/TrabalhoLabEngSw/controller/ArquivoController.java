@@ -10,10 +10,12 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,7 +39,7 @@ import fateczl.TrabalhoLabEngSw.persistence.UsuarioRepository;
 @Controller
 public class ArquivoController {
 	@Autowired
-	private ArquivoRepository rep;
+	private ArquivoRepository arqRep;
 	@Autowired
 	private BlobRepository blobRep;
 	@Autowired
@@ -100,30 +102,35 @@ public class ArquivoController {
 		return "/home/index";
 	}*/
 	@PostMapping("/arquivo/uploadArquivo")
-	public String upload(@RequestParam("arquivo") MultipartFile[] arquivos, @RequestParam("msg") String msg) throws IOException, NoSuchAlgorithmException {
+	public String upload(@RequestParam("arquivo") MultipartFile[] arquivos, @RequestParam("msg") String msg,
+			@CookieValue(name = "user_id", defaultValue = "") String user_id) throws IOException, NoSuchAlgorithmException {
 
 
-        Usuario autor = userRep.findByEmail("guto@email.com");
+        Optional<Usuario> autorOpt = userRep.findById(Long.valueOf(user_id));
+        Usuario autor = autorOpt.get();
 
-        Repositorio repositorio = new Repositorio();
-
-
-        autor.setId(1L);
-        repositorio.setId(1L);
+        //Optional<Repositorio> repositorio = repRep.findById(rep_Id);
+        Optional<Repositorio> repositorioOpt = repRep.findById(1L);
+        Repositorio repositorio = repositorioOpt.get();
         
         System.out.println("COMMIT");
         System.out.println("Autor_id:"+autor.getId());
         System.out.println("Repositorio_id:"+repositorio.getId());
+        Commite commitAnterior = commitRep.findLastCommit();
         Commite commit = new Commite();
         commit.setAutor(autor);
         commit.setMsg(msg);
         commit.setOrigem(repositorio);
+		//Buscar o commit anterior para criar a sequencia temporal de versionamento        
+
+        if (commitAnterior != null) {
+        	commit.setAnterior(commitAnterior);
+        }
         commitRep.save(commit);
         
 	    for (MultipartFile arquivo : arquivos) {
 	        System.out.println(arquivo.getOriginalFilename());
-	        System.out.println(arquivo.getContentType());
-     
+	        System.out.println(arquivo.getContentType());     
 
 	        System.out.println("BLOB");
 	        Blob blob = new Blob();
@@ -135,20 +142,21 @@ public class ArquivoController {
 	        BigInteger bigInt = new BigInteger(1, sha1bytes);
 	        String sha1 = bigInt.toString(16);
 	        blob.setSha1(sha1);
-	        blobRep.save(blob);
-
-	
+	        blobRep.save(blob);	        
 	        
+			Diretorio diretorio = new Diretorio();
+			diretorio.setNome("Tree node");		
+			diretorio.setCommit(commit);
+			dirRep.save(diretorio);
 	        
 	        System.out.println("ARQUIVO");
 	        Arquivo novo = new Arquivo();
 	        novo.setNome(arquivo.getOriginalFilename());
 	        novo.setBlob(blob);
-	        novo.setCommite(commit);
-	        rep.save(novo);
-	    }
-
-	 
+	        //novo.setCommite(commit);
+	        novo.setDiretorioPai(diretorio);
+	        arqRep.save(novo);
+	    }	 
 	    return "redirect:/home/index";
 	}
 
@@ -161,7 +169,7 @@ public class ArquivoController {
 		Optional<Repositorio> repositorioOpt = repRep.findById(repId);
 	    
 	    if (repositorioOpt.isPresent()) {
-	        System.out.println(repositorioOpt.get().getNome());
+	        System.out.println("Repositorio de ID:"+repositorioOpt.get().getId()+" "+repositorioOpt.get().getNome());
 	        mv.addObject("repositorio", repositorioOpt.get());
 	    } else {
 	        mv.addObject("erro", "Repositório não encontrado");
@@ -170,6 +178,11 @@ public class ArquivoController {
 		mv.setViewName("arquivo/upload");
  		return mv;
  	}
+	
+	public List<Arquivo> findLastByRepositorio(Long repId) {
+		Commite ultimoCommit = commitRep.findLastCommitByRepositorio(repId);
+		return arqRep.findByCommiteAndRepositorio(ultimoCommit.getId(), repId);
+	}
 	
 
 	

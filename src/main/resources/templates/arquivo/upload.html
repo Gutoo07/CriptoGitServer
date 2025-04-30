@@ -185,7 +185,7 @@
 	        <div class="title"><span>Repositorio: </span><span th:text="${repositorio.nome}"></span></div>
 
 	        <div class="repo-details">
-	            <form th:action="@{/arquivo/uploadArquivo}" method="post" enctype="multipart/form-data">
+	            <form th:action="@{/arquivo/uploadArquivo}" method="post" enctype="multipart/form-data"  th:object="${repositorio}">
 	  
 					<!-- Id Do Repositorio -->
 					<input type="hidden" id="rep_id" name="rep_id" th:value="${repId}">

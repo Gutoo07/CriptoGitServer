@@ -38,7 +38,8 @@ public class Diretorio {
 	@JoinColumn(name="diretorioPaiId", nullable = true)
 	private Diretorio diretorioPai;
 	
+	/*
 	@ManyToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "repositorioId", nullable = false)
-	private Repositorio repositorio;
+	private Repositorio repositorio; AGORA QUEM TEM REF AO REPOSITORIO SAO OS COMMITES*/
 }

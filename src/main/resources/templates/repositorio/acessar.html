@@ -223,13 +223,14 @@
 
 	      <div class="file-list">
 	        <h3>Arquivos do Repositório:</h3>
-	        <ul>
-	          <li><a href="#">Arquivo1.java</a></li>
-	          <li><a href="#">Arquivo2.py</a></li>
-	          <li><a href="#">Arquivo3.js</a></li>
-	          <li><a href="#">README.md</a></li>
-	          <!-- Adicione mais arquivos conforme necessário -->
-	        </ul>
+	          <table>
+	          	<tr>
+	          		<th>Arquivo</th>
+	          	</tr>
+	          	<tr th:each="arq : ${arquivos}">
+	          		<td th:text="${arq.nome}"></td>
+	          	</tr>
+	          </table>
 	      </div>
 	    </div>
 	  </div>

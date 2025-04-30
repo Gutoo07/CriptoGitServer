@@ -28,19 +28,18 @@ public class Commite {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "msg", length = 100, nullable = true)
+	@Column(name = "msg", length = 100, nullable = true, unique = false)
 	private String msg;
 	
-	@OneToOne(targetEntity = Usuario.class, fetch = FetchType.LAZY)
-	@JoinColumn(name = "usuarioAutorId", nullable = false)
+	@ManyToOne(targetEntity = Usuario.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "usuario_Autor_Id", nullable = false, unique = false)
 	private Usuario autor;
 	
-	/*
-	@OneToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
-	@JoinColumn(name="commite_id", nullable = true)
-	private Commite anterior;*/
+	@ManyToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
+	@JoinColumn(name="commite_anterior_id", nullable = true, unique = false)
+	private Commite anterior;
 	
-	@OneToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
-	@JoinColumn(name="repositorio_id", nullable = false)
+	@ManyToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
+	@JoinColumn(name="repositorio_origem_id", nullable = false, unique = false)
 	private Repositorio origem;
 }

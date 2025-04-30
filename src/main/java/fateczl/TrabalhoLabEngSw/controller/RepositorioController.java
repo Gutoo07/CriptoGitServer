@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import fateczl.TrabalhoLabEngSw.model.Arquivo;
 import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.model.Usuario;
 import fateczl.TrabalhoLabEngSw.persistence.RepositorioRepository;
@@ -22,6 +23,8 @@ public class RepositorioController {
 	@Autowired
 	private RepositorioRepository repRep;
 	private RepositorioService repService;
+	@Autowired
+	private ArquivoController arqControl;
 	
 	@GetMapping("/repositorios")
 	public ModelAndView carregaRepositorios(@CookieValue(name = "user_id",defaultValue = "") String user_id) {
@@ -31,8 +34,18 @@ public class RepositorioController {
 		usuario.setId(Long.valueOf(user_id));
 		List<Repositorio> lista = repRep.findByUsuario(usuario);
 		mv.setViewName("repositorio/listagem");
-		System.out.println(lista.size());
+		System.out.println(lista.size()+ "repositorio(s)");
+		for (Repositorio aux: lista) {
+			System.out.println("Repositorio 1: ID "+aux.getId());
+		}
 		mv.addObject("listaRep", lista);
+		return mv;
+	}
+	@GetMapping("/criar")
+	public ModelAndView criacaoRepositorio(@CookieValue(name = "user_id", defaultValue = "") String user_id) {
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("repositorio/criar");
+		mv.addObject("repositorio", new Repositorio());
 		return mv;
 	}
 	
@@ -52,7 +65,9 @@ public class RepositorioController {
 	    } else {
 	        mv.addObject("erro", "Repositório não encontrado");
 	    }
-
+	    /*Achar os arquivos do ultimo commit desse repositorio*/
+	    List<Arquivo> arquivos = arqControl.findLastByRepositorio(repId); 
+	    mv.addObject("arquivos", arquivos);
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
