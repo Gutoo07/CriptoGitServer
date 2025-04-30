@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Trabalho Engenharia</title>
+  <title>Criar Repositório</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -12,7 +12,6 @@
       background-color: #f6f8fa;
     }
 
-    /* Barra de navegação superior */
     .navbar {
       background-color: #24292f;
       color: white;
@@ -40,10 +39,9 @@
       padding: 5px 15px;
       border: 1px solid #ccc;
       border-radius: 20px;
-      width: 400px; /* Ajuste o tamanho conforme necessário */
+      width: 400px;
     }
 
-    /* Botão de usuário/login */
     .navbar .login-btn {
       background-color: #2c974b;
       color: white;
@@ -57,7 +55,6 @@
       background-color: #238a3b;
     }
 
-    /* Sidebar */
     .sidebar {
       width: 250px;
       background-color: #24292f;
@@ -83,7 +80,6 @@
       background-color: #444;
     }
 
-    /* Conteúdo principal */
     .content {
       margin-left: 270px;
       padding: 20px;
@@ -94,27 +90,48 @@
       margin-bottom: 20px;
     }
 
-    .content .repo-card {
+    .form-container {
       background-color: white;
       border: 1px solid #ddd;
       border-radius: 6px;
-      padding: 15px;
-      margin-bottom: 20px;
+      padding: 20px;
+      max-width: 600px;
     }
 
-    .repo-card .repo-name {
-      font-size: 20px;
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
       font-weight: bold;
     }
 
-    .repo-card .repo-description {
-      font-size: 14px;
-      color: #555;
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .form-group button {
+      background-color: #2c974b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .form-group button:hover {
+      background-color: #238a3b;
     }
   </style>
 </head>
 <body>
-  <!-- Barra de navegação -->
+
   <div class="navbar">
     <div class="logo">GitHub</div>
     <div class="search-bar">
@@ -123,27 +140,26 @@
     <a href="#" class="login-btn">Login</a>
   </div>
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <a href="#">Projetos</a>
-	<a href="#">Colaboradores</a>
+    <a href="#">Colaboradores</a>
   </div>
 
-  <!-- Conteúdo principal -->
   <div class="content">
-    <div class="title">Repositórios</div>
+    <div class="title">Criar Novo Repositório</div>
 
-    <!-- Exemplo de repositório -->
-    <div style="cursor:pointer;" onclick="window.location.href = '/criar'" class="repo-card">
-      <div class="repo-name">Criar Repositório</div>
-      <div class="repo-description">Crie um novo repositorio</div>
-    </div>
-
-    <!-- Outro exemplo de repositório -->
-    <div style="cursor:pointer;" onclick="window.location.href = '/repositorios'" class="repo-card">
-      <div class="repo-name">Ver Repositórios</div>
-      <div class="repo-description">Aqui está a descrição de outro repositório. Você pode baixar ele e utilizar sua chave criptografada para ver seus repositorios</div>
+    <div class="form-container">
+      <form>
+        <div class="form-group">
+          <label for="repo-name">Nome do Repositório</label>
+          <input type="text" id="repo-name" name="repo-name" placeholder="Digite o nome do repositório">
+        </div>
+        <div class="form-group">
+          <button type="submit">Salvar</button>
+        </div>
+      </form>
     </div>
   </div>
+
 </body>
 </html>

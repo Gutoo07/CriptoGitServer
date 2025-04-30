@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cadastrar</title>
+  <title>Login</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -98,31 +98,23 @@
 
   <div class="content">
     <div class="form-container">
-      <h2>Cadastro</h2>
-
-      <form method="post" th:action="@{/salvarUsuario}" th:object="${usuario}">
-        <div class="form-group">
-          <label for="nickname">Nickname</label>
-          <input type="text" id="nickname" th:field="*{nickname}" placeholder="Digite seu nickname">
-        </div>
+      <h2>Login</h2>
+      <form>
 
         <div class="form-group">
           <label for="email">E-mail</label>
-          <input type="email" id="email" th:field="*{email}" placeholder="Digite seu e-mail">
+          <input type="email" id="email" name="email" placeholder="Digite seu e-mail">
         </div>
-
         <div class="form-group">
           <label for="senha">Senha</label>
-          <input type="password" id="senha" th:field="*{senha}" placeholder="Crie uma senha">
+          <input type="password" id="senha" name="senha" placeholder="Digite sua senha">
         </div>
-
         <div class="form-group">
-          <button type="submit">Cadastrar</button>
+          <button type="submit">Entrar</button>
         </div>
       </form>
-
       <div class="form-footer">
-        <p>Já tem uma conta? <a th:href="@{/}">Fazer login</a></p>
+        <p>Não tem uma conta? <a href="cadastrar.html">Cadastre-se</a></p>
       </div>
     </div>
   </div>

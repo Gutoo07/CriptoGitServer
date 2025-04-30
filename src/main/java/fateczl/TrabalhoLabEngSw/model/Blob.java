@@ -4,6 +4,8 @@ import org.hibernate.engine.jdbc.env.internal.LobTypes;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
@@ -21,7 +23,12 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode(of="sha1")
 public class Blob {
+	
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
+
 	@Column(name = "sha1", length = 40, nullable = false)
 	private String sha1;
 	

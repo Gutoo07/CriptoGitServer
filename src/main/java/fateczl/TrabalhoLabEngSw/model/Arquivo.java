@@ -35,7 +35,12 @@ public class Arquivo {
 	@JoinColumn(name = "blobSha1", nullable = false)
 	private Blob blob;
 	
+	/*
 	@ManyToOne(targetEntity = Diretorio.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "diretorioPaiId", nullable = false)
-	private Diretorio diretorioPai;
+	private Diretorio diretorioPai;*/
+	
+	@OneToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
+	@JoinColumn(name = "commit_id", nullable = false)
+	private Commite commite;
 }

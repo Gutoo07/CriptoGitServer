@@ -31,11 +31,16 @@ public class Commite {
 	@Column(name = "msg", length = 100, nullable = true)
 	private String msg;
 	
-	@ManyToOne(targetEntity = Usuario.class, fetch = FetchType.LAZY)
+	@OneToOne(targetEntity = Usuario.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "usuarioAutorId", nullable = false)
 	private Usuario autor;
 	
+	/*
 	@OneToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
 	@JoinColumn(name="commite_id", nullable = true)
-	private Commite anterior;
+	private Commite anterior;*/
+	
+	@OneToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
+	@JoinColumn(name="repositorio_id", nullable = false)
+	private Repositorio origem;
 }
