@@ -53,6 +53,8 @@ public class RepositorioController {
 	public ModelAndView acessarRepositorios(@RequestParam(name = "rep_id", required = true) Long repId,
 	                                         @CookieValue(name = "user_id", defaultValue = "") String user_id) {
 	    ModelAndView mv = new ModelAndView();
+		System.out.println("Repositorio ID:"+repId);
+
 
 	    Usuario usuario = new Usuario();
 	    usuario.setId(Long.valueOf(user_id));

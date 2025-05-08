@@ -51,66 +51,18 @@ public class ArquivoController {
 	@Autowired
 	private RepositorioRepository repRep;
 	
-	/*
-	@PostMapping("/arquivo/uploadArquivo")
-	public String upload(@RequestParam("arquivo") MultipartFile arquivo) throws IOException, NoSuchAlgorithmException {
-		System.out.println(arquivo.getOriginalFilename());
-		System.out.println(arquivo.getContentType());
-		
-		Usuario autor = userRep.findByEmail("guto@email.com");
-		
-		Repositorio repositorio = new Repositorio();
-		repositorio.setNome("Repositorio teste");
-		repositorio.setUsuario(autor);
-		
-		byte[] chaveSimetrica = {0,1};
-		repositorio.setChaveSimetrica(chaveSimetrica);
-		
-		repRep.save(repositorio);
-		
-		Blob blob = new Blob();
-		byte[] bytes = arquivo.getBytes();		
-		System.out.println(bytes);
-		blob.setConteudo(bytes);		
-        MessageDigest md = MessageDigest.getInstance("SHA1");
-        byte[] sha1bytes = md.digest(bytes);
-        BigInteger bigInt = new BigInteger(1, sha1bytes);
-        String sha1 = bigInt.toString(16);
-        System.out.println(sha1);
-        blob.setSha1(sha1);
-        blobRep.save(blob);
-        
-        Commite commit = new Commite();
-		commit.setAutor(autor);
-		commit.setMsg("Primeiro commit teste");
-		commitRep.save(commit);
-		
-		Diretorio diretorio = new Diretorio();
-		diretorio.setNome("Pasta");		
-		diretorio.setCommit(commit);
-		diretorio.setRepositorio(repositorio);
-		dirRep.save(diretorio);		
-		
-		Arquivo novo = new Arquivo();
-		novo.setNome(arquivo.getOriginalFilename());
-		novo.setBlob(blob);		
-		novo.setDiretorioPai(diretorio);	
-		
-		rep.save(novo);
-		
-		
-		return "/home/index";
-	}*/
+
 	@PostMapping("/arquivo/uploadArquivo")
 	public ModelAndView upload(@RequestParam("arquivo") MultipartFile[] arquivos, @RequestParam("msg") String msg,
-			@CookieValue(name = "user_id", defaultValue = "") String user_id) throws IOException, NoSuchAlgorithmException {
+			@CookieValue(name = "user_id", defaultValue = "") String user_id,
+			@RequestParam(name = "rep_id", required = true) Long repId) throws IOException, NoSuchAlgorithmException {
 
 
         Optional<Usuario> autorOpt = userRep.findById(Long.valueOf(user_id));
         Usuario autor = autorOpt.get();
 
         //Optional<Repositorio> repositorio = repRep.findById(rep_Id);
-        Optional<Repositorio> repositorioOpt = repRep.findById(1L);
+        Optional<Repositorio> repositorioOpt = repRep.findById(repId);
         Repositorio repositorio = repositorioOpt.get();
         
         Commite commitAnterior = commitRep.findLastCommit();
@@ -163,12 +115,11 @@ public class ArquivoController {
 	    }	 
 	    return index(autor);
 	}
-
-
 	
 	@GetMapping("/upload")
  	public ModelAndView carregaPaginaUpload(@RequestParam(name = "rep_id", required = true) Long repId) {
 		ModelAndView mv = new ModelAndView();
+		System.out.println("Repositorio ID:"+repId);
 		
 		Optional<Repositorio> repositorioOpt = repRep.findById(repId);
 	    

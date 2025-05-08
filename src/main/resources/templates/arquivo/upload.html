@@ -188,7 +188,7 @@
 	            <form th:action="@{/arquivo/uploadArquivo}" method="post" enctype="multipart/form-data"  th:object="${repositorio}">
 	  
 					<!-- Id Do Repositorio -->
-					<input type="hidden" id="rep_id" name="rep_id" th:value="${repId}">
+					<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
 					
 					
 					<!-- Nome do Commit -->
