@@ -1,6 +1,7 @@
 package fateczl.TrabalhoLabEngSw.controller;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import fateczl.TrabalhoLabEngSw.model.Arquivo;
+import fateczl.TrabalhoLabEngSw.model.Commite;
 import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.model.Usuario;
 import fateczl.TrabalhoLabEngSw.persistence.RepositorioRepository;
@@ -25,6 +27,8 @@ public class RepositorioController {
 	private RepositorioService repService;
 	@Autowired
 	private ArquivoController arqControl;
+	@Autowired
+	private CommitController comControl;
 	
 	@GetMapping("/repositorios")
 	public ModelAndView carregaRepositorios(@CookieValue(name = "user_id",defaultValue = "") String user_id) {
@@ -51,6 +55,7 @@ public class RepositorioController {
 	
 	@GetMapping("/acessar")
 	public ModelAndView acessarRepositorios(@RequestParam(name = "rep_id", required = true) Long repId,
+											@RequestParam(name = "commit_id", required = false) Long commitId,
 	                                         @CookieValue(name = "user_id", defaultValue = "") String user_id) {
 	    ModelAndView mv = new ModelAndView();
 		System.out.println("Repositorio ID:"+repId);
@@ -60,20 +65,52 @@ public class RepositorioController {
 	    usuario.setId(Long.valueOf(user_id));
 
 	    Optional<Repositorio> repositorioOpt = repRep.findById(repId);
-	    
+	    List<Arquivo> arquivos;
 	    if (repositorioOpt.isPresent()) {
 	        System.out.println(repositorioOpt.get().getNome());
 	        mv.addObject("repositorio", repositorioOpt.get());
 	    } else {
 	        mv.addObject("erro", "Repositório não encontrado");
 	    }
-	    /*Achar os arquivos do ultimo commit desse repositorio*/
-	    List<Arquivo> arquivos = arqControl.findLastByRepositorio(repId); 
+	    
+	    if (commitId == null) {
+		    /*Achar os arquivos do ultimo commit desse repositorio*/
+		     arquivos = arqControl.findLastByRepositorio(repId); 
+		     System.out.println("Last");
+	    } else {
+	    	 arquivos = arqControl.findByCommit(commitId, repId);
+	    	 System.out.println("Commit #");
+	    }
+
+	    List<Commite> commits = comControl.getAllByRepId(repId);
 	    mv.addObject("arquivos", arquivos);
+	    mv.addObject("commits", commits);
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
+	@PostMapping("/acessarCommit")
+	public ModelAndView acessarCommit(@RequestParam Map<String, String> params) {
+	    ModelAndView mv = new ModelAndView();
+	    Long repId = Long.valueOf(params.get("rep_id"));
+	    Long commitId = Long.valueOf(params.get("commit_id"));
+	    
+	    Optional<Repositorio> repositorioOpt = repRep.findById(repId);
+	    if (repositorioOpt.isPresent()) {
+	        mv.addObject("repositorio", repositorioOpt.get());
+	    } else {
+	        mv.addObject("erro", "Repositório não encontrado");
+	    }   
+	        
+	    List<Arquivo> arquivos;
+    	arquivos = arqControl.findByCommit(commitId, repId);
+    	System.out.println("Commit #"+commitId);
 
+	    List<Commite> commits = comControl.getAllByRepId(repId);
+	    mv.addObject("arquivos", arquivos);
+	    mv.addObject("commits", commits);
+	    mv.setViewName("repositorio/acessar");
+	    return mv;
+	}
 	
 	@PostMapping("/criarRepositorio")
 	public ModelAndView criarRepositorio(Repositorio repositorio,

@@ -188,12 +188,22 @@
 	    <div class="repo-details">
 	      <div class="version-select">
 	        <label for="version">Selecionar versão:</label>
-	        <select id="version" name="version">
-	          <option value="1">Última versão</option>
-	          <option value="2">Versão 1.1</option>
-	          <option value="3">Versão 1.0</option>
-	          <!-- Adicione mais opções conforme necessário -->
-	        </select>
+	        <!-- <select th:field="*{commite}" id="commit" name="commit">
+	          <option th:each="commite : ${commits}" th:text="${commite.id}"></option>
+          	  </th:each>
+	        </select> -->
+	        <!-- <select th:field="*{percentage}">
+				    <option th:each="i : ${#numbers.sequence(0, 100)}" th:value="${i}" th:text="${i}" 
+				      th:selected="${i==75}"></option>
+				</select> -->
+			<form method="post" th:action="@{/acessarCommit}" th:object="${commite}">
+				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
+				<select id="commit_id" name="commit_id">
+					<option th:each="commite : ${commits}" th:value="${commite.id}" th:text="${commite.id}"></option>
+				</select>
+			<button type="submit">Ver commit</button>
+			</form>
+
 	      </div>
 
 	      <!-- Botões de ação -->

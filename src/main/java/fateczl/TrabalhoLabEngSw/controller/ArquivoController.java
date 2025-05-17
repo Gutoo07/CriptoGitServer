@@ -142,6 +142,9 @@ public class ArquivoController {
 			return null;
 		}
 	}
+	public List<Arquivo> findByCommit(Long commitId, Long repId) {
+		return arqRep.findByCommiteAndRepositorio(commitId, repId);
+	}
 	public ModelAndView index(Usuario usuario) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("home/index");
