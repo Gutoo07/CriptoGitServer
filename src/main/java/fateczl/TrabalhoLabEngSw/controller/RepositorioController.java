@@ -66,6 +66,7 @@ public class RepositorioController {
 
 	    Optional<Repositorio> repositorioOpt = repRep.findById(repId);
 	    List<Arquivo> arquivos;
+	    Commite commit = new Commite();
 	    if (repositorioOpt.isPresent()) {
 	        System.out.println(repositorioOpt.get().getNome());
 	        mv.addObject("repositorio", repositorioOpt.get());
@@ -76,15 +77,15 @@ public class RepositorioController {
 	    if (commitId == null) {
 		    /*Achar os arquivos do ultimo commit desse repositorio*/
 		     arquivos = arqControl.findLastByRepositorio(repId); 
-		     System.out.println("Last");
+		     commit = comControl.getLast(repId);
 	    } else {
 	    	 arquivos = arqControl.findByCommit(commitId, repId);
-	    	 System.out.println("Commit #");
 	    }
 
 	    List<Commite> commits = comControl.getAllByRepId(repId);
 	    mv.addObject("arquivos", arquivos);
 	    mv.addObject("commits", commits);
+	    mv.addObject("commit", commit);
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
@@ -102,12 +103,15 @@ public class RepositorioController {
 	    }   
 	        
 	    List<Arquivo> arquivos;
+	    Optional<Commite> commit = Optional.empty();
+
     	arquivos = arqControl.findByCommit(commitId, repId);
-    	System.out.println("Commit #"+commitId);
+    	commit = comControl.findById(commitId);
 
 	    List<Commite> commits = comControl.getAllByRepId(repId);
 	    mv.addObject("arquivos", arquivos);
 	    mv.addObject("commits", commits);
+	    mv.addObject("commit", commit.get());
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
@@ -126,5 +130,14 @@ public class RepositorioController {
 		mv.setViewName("repositorio/listagem");
 		return carregaRepositorios(user_id);
 	}
-	
+	@PostMapping("/baixarRepositorio")
+	public ModelAndView baixarRepositorio(@RequestParam Map<String, String> params,
+			@CookieValue(name = "user_id", defaultValue = "") String user_id) {
+	    Long commitId = Long.valueOf(params.get("commit_id"));
+		System.out.println("baixar rep do commit #"+commitId);
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("login/login");
+		mv.addObject("usuario", new Usuario());
+		return mv;
+	}
 }

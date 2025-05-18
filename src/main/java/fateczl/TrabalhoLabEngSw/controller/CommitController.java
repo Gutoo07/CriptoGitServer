@@ -1,6 +1,7 @@
 package fateczl.TrabalhoLabEngSw.controller;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,5 +16,11 @@ public class CommitController {
 	
 	public List<Commite> getAllByRepId(Long repId) {
 		return comRep.getAllByRepId(repId);
+	}
+	public Commite getLast(Long repId) {
+		return comRep.findLastCommitByRepositorio(repId);
+	}
+	public Optional<Commite> findById(Long commitId) {
+		return comRep.findById(commitId);
 	}
 }

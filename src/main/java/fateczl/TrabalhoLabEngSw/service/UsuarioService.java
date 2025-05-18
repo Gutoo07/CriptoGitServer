@@ -60,6 +60,7 @@ public class UsuarioService {
 		File file = new File(currentDirectoryName+"/chaves/"+nomeArquivo);
 		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
 			fileOutputStream.write(chaveByteArray);
+			fileOutputStream.close();
 		}
 	}
 }

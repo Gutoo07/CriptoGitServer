@@ -188,18 +188,11 @@
 	    <div class="repo-details">
 	      <div class="version-select">
 	        <label for="version">Selecionar versão:</label>
-	        <!-- <select th:field="*{commite}" id="commit" name="commit">
-	          <option th:each="commite : ${commits}" th:text="${commite.id}"></option>
-          	  </th:each>
-	        </select> -->
-	        <!-- <select th:field="*{percentage}">
-				    <option th:each="i : ${#numbers.sequence(0, 100)}" th:value="${i}" th:text="${i}" 
-				      th:selected="${i==75}"></option>
-				</select> -->
+	         
 			<form method="post" th:action="@{/acessarCommit}" th:object="${commite}">
 				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
 				<select id="commit_id" name="commit_id">
-					<option th:each="commite : ${commits}" th:value="${commite.id}" th:text="${commite.id}"></option>
+					<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
 				</select>
 			<button type="submit">Ver commit</button>
 			</form>
@@ -208,15 +201,18 @@
 
 	      <!-- Botões de ação -->
 	    <div style="margin-top: 30px;">
-	        <button onclick="baixarRepositorio()" style="
-	        background-color: #0366d6;
-	        color: white;
-	        padding: 10px 20px;
-	        border: none;
-	        border-radius: 6px;
-	        cursor: pointer;
-	        margin-right: 10px;
-	        ">📥 Baixar repositório</button>
+	    	<form method="post" th:action="@{/baixarRepositorio}">
+				<input type="hidden" id="commit_id" name="commit_id" th:value="${commit.id}">
+		        <button  style="
+		        background-color: #0366d6;
+		        color: white;
+		        padding: 10px 20px;
+		        border: none;
+		        border-radius: 6px;
+		        cursor: pointer;
+		        margin-right: 10px;
+		        ">📥 Baixar repositório</button>
+	        </form>
 	    
 			<button th:onclick="'window.location.href = \'/upload?rep_id=' + ${repositorio.id} + '\''" style="
 			    background-color: #6f42c1;
