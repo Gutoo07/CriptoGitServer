@@ -2,9 +2,11 @@ package fateczl.TrabalhoLabEngSw.controller;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -151,6 +153,16 @@ public class ArquivoController {
 		mv.addObject("usuario", usuario);
 		return mv;
 	}
-	
+	public void download(Arquivo arquivo) throws IOException {
+		Blob blob = blobRep.findById(arquivo.getBlob().getId());
+		Path currentDirectoryPath = FileSystems.getDefault().getPath("");
+		String currentDirectoryName = currentDirectoryPath.toAbsolutePath().toString();
+		new File(currentDirectoryName+"/downloads").mkdirs();
+		File file = new File(currentDirectoryName+"/downloads/"+arquivo.getNome());
+		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+			fileOutputStream.write(blob.getConteudo());
+			fileOutputStream.close();
+		}
+	}
 
 }

@@ -1,5 +1,6 @@
 package fateczl.TrabalhoLabEngSw.controller;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -132,9 +133,13 @@ public class RepositorioController {
 	}
 	@PostMapping("/baixarRepositorio")
 	public ModelAndView baixarRepositorio(@RequestParam Map<String, String> params,
-			@CookieValue(name = "user_id", defaultValue = "") String user_id) {
+			@CookieValue(name = "user_id", defaultValue = "") String user_id) throws IOException {
 	    Long commitId = Long.valueOf(params.get("commit_id"));
-		System.out.println("baixar rep do commit #"+commitId);
+	    Long repId = Long.valueOf(params.get("rep_id"));
+    	List<Arquivo> arquivos = arqControl.findByCommit(commitId, repId);
+    	for (Arquivo a : arquivos) {
+    		arqControl.download(a);
+    	}
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("login/login");
 		mv.addObject("usuario", new Usuario());
