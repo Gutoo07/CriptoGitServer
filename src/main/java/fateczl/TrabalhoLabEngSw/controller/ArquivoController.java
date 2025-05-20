@@ -157,8 +157,24 @@ public class ArquivoController {
 		Blob blob = blobRep.findById(arquivo.getBlob().getId());
 		Path currentDirectoryPath = FileSystems.getDefault().getPath("");
 		String currentDirectoryName = currentDirectoryPath.toAbsolutePath().toString();
-		new File(currentDirectoryName+"/downloads").mkdirs();
-		File file = new File(currentDirectoryName+"/downloads/"+arquivo.getNome());
+		String downloadPath = currentDirectoryName+"/downloads";
+		
+		String arquivoNome = arquivo.getNome();
+		String[] caminhos = arquivoNome.split("/");
+		System.out.println("============="+caminhos.length);
+		File file;
+		if (caminhos.length > 1) {
+			int i;
+			for (i = 0; i < (caminhos.length - 1); i++) {
+				downloadPath = downloadPath + "/" + caminhos[i];
+			}
+			new File(downloadPath).mkdirs();
+			file = new File(downloadPath+"/"+caminhos[i]);
+		} else {
+			new File(downloadPath).mkdirs();
+			file = new File(downloadPath+"/"+arquivoNome);
+		}
+
 		try (FileOutputStream fileOutputStream = new FileOutputStream(file)) {
 			fileOutputStream.write(blob.getConteudo());
 			fileOutputStream.close();
