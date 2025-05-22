@@ -28,7 +28,7 @@ public class Arquivo {
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(name = "nome", length = 100, nullable = false)
+	@Column(name = "nome", length = 1000, nullable = false)
 	private String nome;
 	
 	@ManyToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
