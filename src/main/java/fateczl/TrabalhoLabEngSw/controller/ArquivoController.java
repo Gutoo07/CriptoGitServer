@@ -161,7 +161,6 @@ public class ArquivoController {
 		
 		String arquivoNome = arquivo.getNome();
 		String[] caminhos = arquivoNome.split("/");
-		System.out.println("============="+caminhos.length);
 		File file;
 		if (caminhos.length > 1) {
 			int i;
