@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import fateczl.TrabalhoLabEngSw.model.Commite;
+import fateczl.TrabalhoLabEngSw.model.Repositorio;
 
 public interface CommitRepository extends JpaRepository<Commite, Long> {
 	
@@ -17,4 +18,5 @@ public interface CommitRepository extends JpaRepository<Commite, Long> {
 	@Query(nativeQuery = true, value = "SELECT * FROM commite c WHERE c.repositorio_origem_id =:repId ORDER BY id ASC")
 	public List<Commite> getAllByRepId(Long repId);
 	
+	public List<Commite> findByOrigemOrderByIdDesc(Repositorio origem);
 }

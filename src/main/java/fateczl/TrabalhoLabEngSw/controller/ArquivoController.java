@@ -147,6 +147,9 @@ public class ArquivoController {
 	public List<Arquivo> findByCommit(Long commitId, Long repId) {
 		return arqRep.findByCommiteAndRepositorio(commitId, repId);
 	}
+	public List<Arquivo> findAllByDiretorio(Diretorio diretorio) {
+		return arqRep.findByDiretorioPai(diretorio);
+	}
 	public ModelAndView index(Usuario usuario) {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("home/index");
@@ -179,5 +182,9 @@ public class ArquivoController {
 			fileOutputStream.close();
 		}
 	}
+	public void excluir(Arquivo arquivo) {
+		arqRep.delete(arquivo);
+	}
 
 }
+//

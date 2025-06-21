@@ -186,22 +186,20 @@
 
 	    <!-- Seleção de versão do histórico -->
 	    <div class="repo-details">
-	      <div class="version-select">
-	        <label for="version">Selecionar versão:</label>
-	         
-			<form method="post" th:action="@{/acessarCommit}" th:object="${commite}">
-				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
-				<select id="commit_id" name="commit_id">
-					<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
-				</select>
-			<button type="submit">Ver commit</button>
-			</form>
-
+	      <div class="version-select" th:if="${commits != null}">
+	        <label for="version">Selecionar versão:</label>	         
+				<form method="post" th:action="@{/acessarCommit}" th:object="${commite}">
+					<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
+					<select id="commit_id" name="commit_id">
+						<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
+					</select>
+				<button type="submit">Ver commit</button>
+				</form>
 	      </div>
 
 	      <!-- Botões de ação -->
-	    <div style="margin-top: 30px;">
-	    	<form method="post" th:action="@{/baixarRepositorio}">
+	    <div style="margin-top: 30px;" >
+	    	<form method="post" th:action="@{/baixarRepositorio}" th:if="${commit != null}">
 				<input type="hidden" id="commit_id" name="commit_id" th:value="${commit.id}">
 				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
 		        <button  style="

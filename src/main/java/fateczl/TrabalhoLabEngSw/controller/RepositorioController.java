@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import fateczl.TrabalhoLabEngSw.model.Arquivo;
 import fateczl.TrabalhoLabEngSw.model.Commite;
+import fateczl.TrabalhoLabEngSw.model.Diretorio;
 import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.model.Usuario;
 import fateczl.TrabalhoLabEngSw.persistence.RepositorioRepository;
@@ -30,6 +31,8 @@ public class RepositorioController {
 	private ArquivoController arqControl;
 	@Autowired
 	private CommitController comControl;
+	@Autowired
+	private DiretorioController dirControl;
 	
 	@GetMapping("/repositorios")
 	public ModelAndView carregaRepositorios(@CookieValue(name = "user_id",defaultValue = "") String user_id) {
@@ -90,6 +93,41 @@ public class RepositorioController {
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
+	@GetMapping("/excluirRepositorio")
+	public ModelAndView excluirRepositorio(@RequestParam Map<String, String> params, @CookieValue(name = "user_id", defaultValue = "") String user_id) {
+		String rep_id = params.get("rep_id");
+		Optional<Repositorio> repositorioOpt = repRep.findById(Long.valueOf(rep_id));
+		if (repositorioOpt.isPresent()) {
+			if (repositorioOpt.get().getUsuario().getId() == Long.valueOf(user_id)) {
+				List<Commite> commits = comControl.getAllByRepIdOrderByIdDesc(repositorioOpt.get());
+				for (Commite c : commits) {
+					List<Diretorio> diretorios = dirControl.findAllByCommit(c);
+					for (Diretorio d : diretorios) {
+						List<Arquivo> arquivos = arqControl.findAllByDiretorio(d);
+						for (Arquivo a : arquivos) {
+							System.err.println();
+							System.err.println("Arquivo "+a.getId());
+							arqControl.excluir(a);
+						}
+						System.err.println("Diretorio "+d.getId());
+						dirControl.excluir(d);
+					}
+					System.err.println("Commit "+c.getId());
+					comControl.excluir(c);
+				}
+ 				repRep.delete(repositorioOpt.get());
+			}
+		}
+		ModelAndView mv = new ModelAndView();
+		Usuario usuario = new Usuario();
+		usuario.setId(Long.valueOf(user_id));
+		List<Repositorio> lista = repRep.findByUsuario(usuario);
+		mv.setViewName("repositorio/listagem");		
+		mv.addObject("listaRep", lista);
+		return mv;
+	}
+	
+	
 	@PostMapping("/acessarCommit")
 	public ModelAndView acessarCommit(@RequestParam Map<String, String> params) {
 	    ModelAndView mv = new ModelAndView();

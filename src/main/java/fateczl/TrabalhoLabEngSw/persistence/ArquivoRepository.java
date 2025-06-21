@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 
 import fateczl.TrabalhoLabEngSw.model.Arquivo;
 import fateczl.TrabalhoLabEngSw.model.Blob;
+import fateczl.TrabalhoLabEngSw.model.Diretorio;
 
 public interface ArquivoRepository extends JpaRepository<Arquivo, Long> {
 
@@ -22,4 +23,6 @@ public interface ArquivoRepository extends JpaRepository<Arquivo, Long> {
 	public List<Arquivo> findByCommiteAndRepositorio(Long commiteId, Long repositorioId);
 	
 	public Arquivo findByBlob(Blob blob);
+	
+	public List<Arquivo> findByDiretorioPai(Diretorio diretorioPai);
 }

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import fateczl.TrabalhoLabEngSw.model.Commite;
+import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.persistence.CommitRepository;
 
 @Controller
@@ -17,10 +18,17 @@ public class CommitController {
 	public List<Commite> getAllByRepId(Long repId) {
 		return comRep.getAllByRepId(repId);
 	}
+	public List<Commite> getAllByRepIdOrderByIdDesc(Repositorio repositorio) {
+		return comRep.findByOrigemOrderByIdDesc(repositorio);
+	}
 	public Commite getLast(Long repId) {
 		return comRep.findLastCommitByRepositorio(repId);
 	}
 	public Optional<Commite> findById(Long commitId) {
 		return comRep.findById(commitId);
 	}
+	public void excluir(Commite commit) {
+		comRep.delete(commit);
+	}
 }
+

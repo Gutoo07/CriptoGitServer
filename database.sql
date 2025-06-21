@@ -81,13 +81,6 @@ create table arquivo (
 
 go
 
-create table usuario_repositorio (
-	usuarioId		int		not null,
-	repositorioId	int		not null
-	primary key(usuarioId, repositorioId)
-	foreign key(usuarioId) references usuario(id),
-	foreign key(repositorioId) references repositorio(id)
-)
 -------------------------------------------------------------------------
 
 go
@@ -136,3 +129,5 @@ select top 1 * from commite where repositorio_origem_id = 1
 order by id desc
 
 --arquivos do ultimo commit de determinado repositorio
+
+select * from commite order by id asc
