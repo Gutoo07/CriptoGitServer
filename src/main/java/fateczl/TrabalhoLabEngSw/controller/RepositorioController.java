@@ -87,6 +87,10 @@ public class RepositorioController {
 	    }
 
 	    List<Commite> commits = comControl.getAllByRepId(repId);
+	    if (commits.isEmpty()) {
+	    	commits = null;
+	    }
+	    
 	    mv.addObject("arquivos", arquivos);
 	    mv.addObject("commits", commits);
 	    mv.addObject("commit", commit);
