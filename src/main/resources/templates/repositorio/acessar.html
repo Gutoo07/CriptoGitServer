@@ -223,18 +223,20 @@
 			    ✅ Fazer novo commit
 			</button>
 	    </div>	  
-
-	      <div class="file-list">
-	        <h3>Arquivos do Repositório:</h3>
-	          <table>
-	          	<tr>
-	          		<th>Arquivo</th>
-	          	</tr>
-	          	<tr th:each="arq : ${arquivos}">
-	          		<td th:text="${arq.nome}"></td>
-	          	</tr>
-	          </table>
-	      </div>
+			<div th:if="${arquivos != null}">
+				<div class="file-list">
+		        	<h3>Arquivos do Repositório:</h3>
+			          <table>
+			          	<tr>
+			          		<th>Arquivo</th>
+			          	</tr>
+			          	<tr th:each="arq : ${arquivos}">
+			          		<td th:text="${arq.nome}"></td>
+			          	</tr>
+			          </table>
+		    	</div>
+			</div>
+	      
 	    </div>
 	  </div>
 	</body>
