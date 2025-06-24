@@ -132,6 +132,19 @@
 	    .view-repo-btn:hover {
 	      background-color: #238a3b;
 	    }
+	    
+	    .view-repo-btn-excluir {
+	      background-color: #C41E3A;
+	      color: white;
+	      padding: 8px 16px;
+	      border-radius: 6px;
+	      text-decoration: none;
+	      transition: background-color 0.3s;
+	    }
+
+	    .view-repo-btn-excluir:hover {
+	      background-color: #D2042D;
+	    }
 	  </style>
 	</head>
 	<body>
@@ -172,7 +185,7 @@
 			    </a>
 			  </td>
 			  <td>
-			    <a th:href="@{/excluirRepositorio?rep_id={id}(id=${repo.id})}" class="view-repo-btn" style="display: block; text-align: center;">
+			    <a th:href="@{/excluirRepositorio?rep_id={id}(id=${repo.id})}" class="view-repo-btn-excluir" style="display: block; text-align: center;">
 			       Excluir
 			    </a>
 			  </td>
