@@ -123,11 +123,12 @@ public class RepositorioController {
 			}
 		}
 		ModelAndView mv = new ModelAndView();
-		Usuario usuario = new Usuario();
-		usuario.setId(Long.valueOf(user_id));
-		List<Repositorio> lista = repRep.findByUsuario(usuario);
-		mv.setViewName("repositorio/listagem");		
-		mv.addObject("listaRep", lista);
+		//Usuario usuario = new Usuario();
+		//usuario.setId(Long.valueOf(user_id));
+		//List<Repositorio> lista = repRep.findByUsuario(usuario);
+		//mv.setViewName("repositorio/listagem");		
+		mv.setViewName("redirect:repositorios");
+		//mv.addObject("listaRep", lista);
 		return mv;
 	}
 	
@@ -170,8 +171,10 @@ public class RepositorioController {
 		repositorio.setChaveSimetrica(repService.gerarChaveSimetrica().getEncoded());
 		repositorio.setUsuario(usuario);
 		repRep.save(repositorio);
-		mv.setViewName("repositorio/listagem");
-		return carregaRepositorios(user_id);
+		mv.setViewName("redirect:repositorios");
+		//mv.setViewName("repositorio/listagem");
+		//return carregaRepositorios(user_id);
+		return mv;
 	}
 	@PostMapping("/baixarRepositorio")
 	public ModelAndView baixarRepositorio(@RequestParam Map<String, String> params,

@@ -67,7 +67,7 @@ public class ArquivoController {
         Optional<Repositorio> repositorioOpt = repRep.findById(repId);
         Repositorio repositorio = repositorioOpt.get();
         
-        Commite commitAnterior = commitRep.findLastCommit();
+        Commite commitAnterior = commitRep.findLastCommitByRepositorio(repId);
         Commite commit = new Commite();
         commit.setAutor(autor);
         commit.setMsg(msg);

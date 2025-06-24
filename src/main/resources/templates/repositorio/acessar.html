@@ -194,7 +194,16 @@
 						<select id="commit_id" name="commit_id">
 							<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
 						</select>
-					<button type="submit">Ver commit</button>
+					<button type="submit"
+						style="
+				        background-color: #949494;
+				        color: white;
+				        padding: 7px 15px;
+				        border: none;
+				        border-radius: 6px;
+				        cursor: pointer;
+				        margin-right: 10px;
+				        ">Ver commit</button>
 					</form>
 		      </div>
 	      	</div>
@@ -215,7 +224,7 @@
 		        margin-right: 10px;
 		        ">📥 Baixar repositório</button>
 	        </form>
-	    
+	    	<br/>
 			<button th:onclick="'window.location.href = \'/upload?rep_id=' + ${repositorio.id} + '\''" style="
 			    background-color: #6f42c1;
 			    color: white;
@@ -231,7 +240,7 @@
 		        	<h3>Arquivos do Repositório:</h3>
 			          <table>
 			          	<tr>
-			          		<th>Arquivo</th>
+			          		<th>Nome</th>
 			          	</tr>
 			          	<tr th:each="arq : ${arquivos}">
 			          		<td th:text="${arq.nome}"></td>
