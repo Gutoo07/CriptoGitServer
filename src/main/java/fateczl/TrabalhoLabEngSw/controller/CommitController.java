@@ -23,10 +23,7 @@ public class CommitController {
 	}
 	public Commite getLast(Long repId) {
 		return comRep.findLastCommitByRepositorio(repId);
-	}
-	public Optional<Commite> findById(Long commitId) {
-		return comRep.findById(commitId);
-	}
+	}	
 	public void excluir(Commite commit) {
 		comRep.delete(commit);
 	}

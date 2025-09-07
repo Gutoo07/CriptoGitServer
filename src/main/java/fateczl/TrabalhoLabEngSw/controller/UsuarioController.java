@@ -5,6 +5,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.ModelAndView;
 
 import fateczl.TrabalhoLabEngSw.model.Usuario;
@@ -14,7 +16,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 
-@Controller
+
+@RestController
+@RequestMapping("/")
 public class UsuarioController {
 	@Autowired
 	private UsuarioService service;
@@ -30,7 +34,6 @@ public class UsuarioController {
 	public ModelAndView index() {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("home/index");
-		mv.addObject("usuario", new Usuario());
 		return mv;
 	}
 	@GetMapping("/cadastro")

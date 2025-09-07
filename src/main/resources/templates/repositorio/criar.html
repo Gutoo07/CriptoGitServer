@@ -149,7 +149,7 @@
 	    <div class="title">Criar Novo Repositório</div>
 
 	    <div class="form-container">
-	      <form method="post" th:action="@{/criarRepositorio}" th:object="${repositorio}">
+	      <form method="post" th:action="@{/repositorio/criarRepositorio}" th:object="${repositorio}">
 	        <div class="form-group">
 	          <label for="nome">Nome do Repositório</label>
 	          <input type="text" id="nome" th:field="*{nome}" name="nome" placeholder="Digite o nome do repositório">

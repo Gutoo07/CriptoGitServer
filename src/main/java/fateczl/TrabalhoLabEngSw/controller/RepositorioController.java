@@ -6,7 +6,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,8 +20,11 @@ import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.model.Usuario;
 import fateczl.TrabalhoLabEngSw.persistence.RepositorioRepository;
 import fateczl.TrabalhoLabEngSw.service.RepositorioService;
+import org.springframework.web.bind.annotation.RestController;
 
-@Controller
+
+@RestController
+@RequestMapping("/repositorio")
 public class RepositorioController {
 	@Autowired
 	private RepositorioRepository repRep;
@@ -34,19 +36,20 @@ public class RepositorioController {
 	@Autowired
 	private DiretorioController dirControl;
 	
-	@GetMapping("/repositorios")
+	@GetMapping("/listagem")
 	public ModelAndView carregaRepositorios(@CookieValue(name = "user_id",defaultValue = "") String user_id) {
 		ModelAndView mv = new ModelAndView();
+		mv.setViewName("repositorio/listagem");
+		
+		// Carregar repositórios do banco de dados
 		Usuario usuario = new Usuario();
-		//System.out.println("Useroid >>>>"+Long.valueOf(user_id));
 		usuario.setId(Long.valueOf(user_id));
 		List<Repositorio> lista = repRep.findByUsuario(usuario);
-		mv.setViewName("repositorio/listagem");
-		System.out.println(lista.size()+ "repositorio(s)");
-		for (Repositorio aux: lista) {
-			System.out.println("Repositorio 1: ID "+aux.getId());
-		}
-		mv.addObject("listaRep", lista);
+		
+		// Passar dados para o frontend via Thymeleaf
+		mv.addObject("repositories", lista);
+		mv.addObject("repositoriesCount", lista.size());
+		
 		return mv;
 	}
 	@GetMapping("/criar")
@@ -127,37 +130,9 @@ public class RepositorioController {
 		//usuario.setId(Long.valueOf(user_id));
 		//List<Repositorio> lista = repRep.findByUsuario(usuario);
 		//mv.setViewName("repositorio/listagem");		
-		mv.setViewName("redirect:repositorios");
+		mv.setViewName("redirect:listagem");
 		//mv.addObject("listaRep", lista);
 		return mv;
-	}
-	
-	
-	@PostMapping("/acessarCommit")
-	public ModelAndView acessarCommit(@RequestParam Map<String, String> params) {
-	    ModelAndView mv = new ModelAndView();
-	    Long repId = Long.valueOf(params.get("rep_id"));
-	    Long commitId = Long.valueOf(params.get("commit_id"));
-	    
-	    Optional<Repositorio> repositorioOpt = repRep.findById(repId);
-	    if (repositorioOpt.isPresent()) {
-	        mv.addObject("repositorio", repositorioOpt.get());
-	    } else {
-	        mv.addObject("erro", "Repositório não encontrado");
-	    }   
-	        
-	    List<Arquivo> arquivos;
-	    Optional<Commite> commit = Optional.empty();
-
-    	arquivos = arqControl.findByCommit(commitId, repId);
-    	commit = comControl.findById(commitId);
-
-	    List<Commite> commits = comControl.getAllByRepId(repId);
-	    mv.addObject("arquivos", arquivos);
-	    mv.addObject("commits", commits);
-	    mv.addObject("commit", commit.get());
-	    mv.setViewName("repositorio/acessar");
-	    return mv;
 	}
 	
 	@PostMapping("/criarRepositorio")
@@ -171,7 +146,8 @@ public class RepositorioController {
 		repositorio.setChaveSimetrica(repService.gerarChaveSimetrica().getEncoded());
 		repositorio.setUsuario(usuario);
 		repRep.save(repositorio);
-		mv.setViewName("redirect:repositorios");
+		//mv.setViewName("redirect:repositorios");
+		mv.setViewName("redirect:listagem");
 		//mv.setViewName("repositorio/listagem");
 		//return carregaRepositorios(user_id);
 		return mv;

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-br">
 	<head>
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	  <title>Trabalho Engenharia</title>
+	  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+	  <title>Trabalho Engenharia - Lista de Repositórios</title>
 	  <style>
 	    body {
 	      font-family: Arial, sans-serif;
@@ -127,6 +128,9 @@
 	      border-radius: 6px;
 	      text-decoration: none;
 	      transition: background-color 0.3s;
+	      border: none;
+	      cursor: pointer;
+	      margin-right: 5px;
 	    }
 
 	    .view-repo-btn:hover {
@@ -140,10 +144,27 @@
 	      border-radius: 6px;
 	      text-decoration: none;
 	      transition: background-color 0.3s;
+	      border: none;
+	      cursor: pointer;
 	    }
 
 	    .view-repo-btn-excluir:hover {
 	      background-color: #D2042D;
+	    }
+
+	    /* Estado de erro */
+	    .error {
+	      background-color: #f8d7da;
+	      border: 1px solid #f5c6cb;
+	      padding: 15px;
+	      border-radius: 6px;
+	      margin: 20px 0;
+	    }
+
+	    .empty-state {
+	      text-align: center;
+	      padding: 40px;
+	      color: #666;
 	    }
 	  </style>
 	</head>
@@ -164,36 +185,119 @@
 	  </div>
 
 	  <!-- Conteúdo principal -->
-	  <div class="content">
-	    <div class="title">Ver Repositórios</div>
+	  <div class="content" id="vue-app">
+	    <div class="title">Lista de Repositórios</div>
+
+	    <div v-if="error" class="error">
+	      <strong>Erro ao carregar repositórios:</strong>
+	      <p>{{ error }}</p>
+	      <button @click="loadRepositories" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px;">
+	        Tentar Novamente
+	      </button>
+	    </div>
 
 	    <!-- Tabela de Repositórios -->
-	    <table class="repo-table">
-	      <thead>
-	        <tr>
-	          <th>Nome do Repositório</th>
-	          <th></th>
-	        </tr>
-	      </thead>
-	      <tbody>
-			
-			<tr th:each="repo : ${listaRep}">
-			  <td th:text="${repo.nome}">Nome do Repositório</td>
-			  <td>
-			    <a th:href="@{/acessar?rep_id={id}(id=${repo.id})}" class="view-repo-btn" style="display: block; text-align: center;">
-			       Abrir
-			    </a>
-			  </td>
-			  <td>
-			    <a th:href="@{/excluirRepositorio?rep_id={id}(id=${repo.id})}" class="view-repo-btn-excluir" style="display: block; text-align: center;">
-			       Excluir
-			    </a>
-			  </td>
-			</tr>
+	    <div>
+	      <div v-if="repositories.length > 0" style="margin-bottom: 20px;">
+	        <span style="color: #666;">Total: {{ repositories.length }} repositórios</span>
+	      </div>
 
-			
-	      </tbody>
-	    </table>
+	      <table v-if="repositories.length > 0" class="repo-table">
+	        <thead>
+	          <tr>
+	            <th>ID</th>
+	            <th>Nome do Repositório</th>
+	            <th>Ações</th>
+	          </tr>
+	        </thead>
+	        <tbody>
+	          <tr v-for="repo in repositories" :key="repo.id">
+	            <td>{{ repo.id }}</td>
+	            <td>{{ repo.nome }}</td>
+	            <td>
+	              <button @click="openRepository(repo.id)" class="view-repo-btn">
+	                Abrir
+	              </button>
+	              <button @click="deleteRepository(repo.id, repo.nome)" class="view-repo-btn-excluir">
+	                Excluir
+	              </button>
+	            </td>
+	          </tr>
+	        </tbody>
+	      </table>
+
+	      <div v-else class="empty-state">
+	        <h3>Nenhum repositório encontrado</h3>
+	        <p>Não há repositórios cadastrados no sistema.</p>	        
+	      </div>
+	    </div>
 	  </div>
+
+	  <script th:inline="javascript">
+		// Dados vindos do servidor via Thymeleaf
+		const serverRepositories = /*[[${repositories}]]*/ [];
+		const serverRepositoriesCount = /*[[${repositoriesCount}]]*/ 0;
+	  </script>
+	  
+	  <script>
+		const { createApp, ref, reactive, onMounted } = Vue;
+		
+		createApp({
+			setup() {
+				// Estados reativos - inicializar com dados do servidor
+				const repositories = reactive(serverRepositories.map(repo => ({
+					id: repo.id,
+					nome: repo.nome,
+					descricao: repo.descricao
+				})));
+				const error = ref(null);
+				
+				// Função para abrir repositório
+				const openRepository = (repoId) => {
+					window.location.href = `/repositorio/acessar?rep_id=${repoId}`;
+				};
+				
+				// Função para excluir repositório
+				const deleteRepository = async (repoId, repoName) => {
+					if (!confirm(`Tem certeza que deseja excluir o repositório "${repoName}"?`)) {
+						return;
+					}
+					
+					try {						
+						const response = await fetch(`/repositorio/excluirRepositorio?rep_id=${repoId}`);
+						
+						if (!response.ok) {
+							throw new Error(`Erro HTTP: ${response.status}`);
+						}
+						
+						// Remover da lista local
+						const index = repositories.findIndex(repo => repo.id === repoId);
+						if (index > -1) {
+							repositories.splice(index, 1);
+						}
+						
+						console.log('Repositório excluído:', repoId);
+					} catch (err) {
+						console.error('Erro ao excluir repositório:', err);
+						error.value = err.message || 'Erro ao excluir repositório';
+					}
+				};
+				
+				// Dados já vêm direto do servidor ao carregar a página, não precisa carregar no onMounted
+				// onMounted(() => {
+				//   loadRepositories();
+				// });
+				
+				// Retornar tudo que será usado no template Vue.js
+				return {
+					repositories,
+					error,
+					openRepository,
+					deleteRepository
+				};
+			}
+		}).mount('#vue-app');
+	  </script>
 	</body>
 	</html>
+

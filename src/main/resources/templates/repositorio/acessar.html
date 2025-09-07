@@ -3,8 +3,9 @@
 	<head>
 	  <meta charset="UTF-8">
 	  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
 	  <title>Trabalho Engenharia</title>
-	  <style>
+	  	<style>
 	      body {
 	        font-family: Arial, sans-serif;
 	        margin: 0;
@@ -162,12 +163,11 @@
 	        text-decoration: none;
 	        color: #24292f;
 	      }
-	    </style>
+		</style>
 	</head>
 	<body>
 	  <!-- Barra de navegação -->
 	  <div class="navbar">
-	    <div class="logo">nome do software</div>
 	    <div class="search-bar">
 	      <input type="text" placeholder="Pesquisar repositórios...">
 	    </div>
@@ -176,7 +176,7 @@
 
 	  <!-- Sidebar -->
 	  <div class="sidebar">
-	    <a href="#">Projetos</a>
+	    <a href="/index">Início</a>
 	    <a href="#">Colaboradores</a>
 	  </div>
 
@@ -188,23 +188,12 @@
 	    <div th:if="${commits != null}">
 		    <div class="repo-details">
 		      <div class="version-select" th:if="${commits != null}">
-		        <label for="version">Selecionar versão:</label>	         
-					<form method="post" th:action="@{/acessarCommit}" th:object="${commite}">
-						<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
-						<select id="commit_id" name="commit_id">
-							<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
-						</select>
-					<button type="submit"
-						style="
-				        background-color: #949494;
-				        color: white;
-				        padding: 7px 15px;
-				        border: none;
-				        border-radius: 6px;
-				        cursor: pointer;
-				        margin-right: 10px;
-				        ">Ver commit</button>
-					</form>
+		        <label for="version">Selecionar versão:</label>	       
+				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
+				<select id="commit_id" name="commit_id" onchange="getCommit()">
+					<option value="">Selecione uma versão...</option>
+					<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
+				</select>
 		      </div>
 	      	</div>
 		</div>
@@ -251,5 +240,23 @@
 	      
 	    </div>
 	  </div>
+	  
+	  <script>
+	    const { createApp, ref, onMounted } = Vue;
+		createApp({
+			setup() {
+				// Requisição para buscar os arquivos do commit selecionado
+				const getCommit = async () => {
+					const response = await fetch(`/api/get_commit?rep_id=${rep_id}&commit_id=${commit_id}`);
+					const data = await response.json();
+					console.log(data);
+				};
+				// Retornar tudo que será usado no template Vue.js
+				return {
+					getCommit
+				};
+			}
+		}).mount('#vue-app');
+	  </script>
 	</body>
 	</html>
