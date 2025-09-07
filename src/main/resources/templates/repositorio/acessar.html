@@ -163,6 +163,27 @@
 	        text-decoration: none;
 	        color: #24292f;
 	      }
+
+	      /* Estilos para mensagens de estado */
+	      .loading-message, .no-files-message {
+	        text-align: center;
+	        padding: 20px;
+	        color: #666;
+	        font-style: italic;
+	      }
+
+	      .loading-message {
+	        background-color: #f8f9fa;
+	        border: 1px solid #e9ecef;
+	        border-radius: 6px;
+	      }
+
+	      .no-files-message {
+	        background-color: #fff3cd;
+	        border: 1px solid #ffeaa7;
+	        border-radius: 6px;
+	        color: #856404;
+	      }
 		</style>
 	</head>
 	<body>
@@ -181,7 +202,7 @@
 	  </div>
 
 	  <!-- Conteúdo principal -->
-	  <div class="content">
+	  <div class="content" id="vue-app">
 		<div class="title"><span th:text="${repositorio.nome}"></span></div>
 
 	    <!-- Seleção de versão do histórico -->
@@ -190,7 +211,7 @@
 		      <div class="version-select" th:if="${commits != null}">
 		        <label for="version">Selecionar versão:</label>	       
 				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
-				<select id="commit_id" name="commit_id" onchange="getCommit()">
+				<select id="commit_id" name="commit_id" @change="getCommit">
 					<option value="">Selecione uma versão...</option>
 					<option th:each="com : ${commits}" th:value="${com.id}" th:text="${com.id}"></option>
 				</select>
@@ -224,17 +245,23 @@
 			    ✅ Fazer novo commit
 			</button>
 	    </div>	  
-			<div th:if="${arquivos != null}">
-				<div class="file-list">
+			<div id="file-list-container">
+				<div class="file-list" v-if="arquivos.length > 0">
 		        	<h3>Arquivos do Repositório:</h3>
 			          <table>
 			          	<tr>
 			          		<th>Nome</th>
 			          	</tr>
-			          	<tr th:each="arq : ${arquivos}">
-			          		<td th:text="${arq.nome}"></td>
+			          	<tr v-for="arquivo in arquivos" :key="arquivo.id">
+			          		<td>{{ arquivo.nome }}</td>
 			          	</tr>
 			          </table>
+		    	</div>
+		    	<div v-else-if="loading" class="loading-message">
+		    		<p>Carregando arquivos...</p>
+		    	</div>
+		    	<div v-else class="no-files-message">
+		    		<p>Nenhum arquivo encontrado para este commit.</p>
 		    	</div>
 			</div>
 	      
@@ -245,14 +272,57 @@
 	    const { createApp, ref, onMounted } = Vue;
 		createApp({
 			setup() {
+				// Dados reativos
+				const arquivos = ref([]);
+				const loading = ref(false);
+				
 				// Requisição para buscar os arquivos do commit selecionado
-				const getCommit = async () => {
-					const response = await fetch(`/api/get_commit?rep_id=${rep_id}&commit_id=${commit_id}`);
-					const data = await response.json();
-					console.log(data);
+				const getCommit = async (event) => {
+					// Pega o id do commit selecionado
+					const commitId = event.target.value;
+					// Pega o id do repositório
+					const repId = document.getElementById('rep_id').value;
+					// Se não for passado um commitId
+					if (!commitId) {
+						console.log('Nenhum commit selecionado');
+						arquivos.value = []; // Limpar lista
+						return;
+					}
+					
+					loading.value = true;
+					
+					try {
+						// Requisição para buscar os arquivos do commit selecionado
+						const response = await fetch(`/api/get_commit?rep_id=${repId}&commit_id=${commitId}`);
+						// Se a requisição for ok
+						if (response.ok) {
+							// Pega os dados do commit
+							const arquivosData = await response.json();
+							console.log('Arquivos do commit:', arquivosData);
+							
+							// Atualizar a lista reativa de arquivos com os dados do commit
+							arquivos.value = arquivosData;
+						// Se a requisição for não ok
+						} else {
+							console.error('Erro HTTP:', response.status);
+							alert('Erro ao carregar arquivos do commit');
+							// Limpar lista
+							arquivos.value = [];
+						}
+					} catch (error) {
+						// Se houver um erro
+						console.error('Erro ao buscar commit:', error);
+						alert('Erro de conexão ao buscar commit');
+						arquivos.value = [];
+					} finally {
+						loading.value = false;
+					}
 				};
+				
 				// Retornar tudo que será usado no template Vue.js
 				return {
+					arquivos,
+					loading,
 					getCommit
 				};
 			}

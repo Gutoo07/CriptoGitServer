@@ -13,6 +13,6 @@ public class CommitService {
     private CommitRepository comRep;
 
     public Optional<Commite> findById(Long commitId) {
-		return comRep.findById(commitId);
+		  return comRep.findById(commitId);
 	}
 }

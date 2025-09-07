@@ -1,5 +1,7 @@
 package fateczl.TrabalhoLabEngSw.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -33,11 +35,13 @@ public class Arquivo {
 	
 	@ManyToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "blobId", nullable = false)
+	@JsonIgnore
 	private Blob blob;
 	
 	
 	@ManyToOne(targetEntity = Diretorio.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "diretorioPaiId", nullable = false)
+	@JsonIgnore
 	private Diretorio diretorioPai;
 	/*
 	@OneToOne(targetEntity = Blob.class, fetch = FetchType.LAZY)
