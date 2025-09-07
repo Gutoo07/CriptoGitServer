@@ -184,6 +184,40 @@
 	        border-radius: 6px;
 	        color: #856404;
 	      }
+
+		  .btn-download {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f8f9fa;
+			border: 1px solid #a5a5a5;
+			border-radius: 6px;
+			color: #868686;
+			cursor: pointer;
+			margin-right: 10px;
+		  }
+
+		  .btn-download:hover {
+			background-color: #ebebeb;
+			border: 1px solid #a5a5a5;
+			color: #868686;
+		  }
+
+		  .btn-commit {
+			margin-top: 20px;
+			padding: 15px;
+			background-color: #f8f9fa;
+			border: 1px solid #a5a5a5;
+			border-radius: 6px;
+			color: #868686;
+			cursor: pointer;
+			margin-right: 10px;
+		  }
+
+		  .btn-commit:hover {
+			background-color: #ebebeb;
+			border: 1px solid #a5a5a5;
+			color: #868686;
+		  }
 		</style>
 	</head>
 	<body>
@@ -203,7 +237,10 @@
 
 	  <!-- Conteúdo principal -->
 	  <div class="content" id="vue-app">
-		<div class="title"><span th:text="${repositorio.nome}"></span></div>
+		<div class="title">
+			<span th:if="${repositorio != null}" th:text="${repositorio.nome}">Nome do Repositório</span>
+			<span th:if="${repositorio == null}">Repositório não encontrado</span>
+		</div>
 
 	    <!-- Seleção de versão do histórico -->
 	    <div th:if="${commits != null}">
@@ -218,32 +255,24 @@
 		      </div>
 	      	</div>
 		</div>
+		
+		<!-- Mensagem quando não há commits -->
+		<div th:if="${commits == null}" style="margin-top: 20px; padding: 15px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; color: #6c757d;">
+			<p><strong>Repositório vazio</strong></p>
+			<p>Este repositório ainda não possui commits. Faça o primeiro commit para começar a versionar seus arquivos.</p>
+		</div>
 
 	      <!-- Botões de ação -->
 	    <div style="margin-top: 30px;" >
 	    	<form method="post" th:action="@{/baixarRepositorio}" th:if="${commit != null}">
 				<input type="hidden" id="commit_id" name="commit_id" th:value="${commit.id}">
 				<input type="hidden" id="rep_id" name="rep_id" th:value="${repositorio.id}">
-		        <button  style="
-		        background-color: #0366d6;
-		        color: white;
-		        padding: 10px 20px;
-		        border: none;
-		        border-radius: 6px;
-		        cursor: pointer;
-		        margin-right: 10px;
-		        ">📥 Baixar repositório</button>
+		        <button class="btn-download">📥 Baixar repositório</button>
 	        </form>
-	    	<br/>
-			<button th:onclick="'window.location.href = \'/upload?rep_id=' + ${repositorio.id} + '\''" style="
-			    background-color: #6f42c1;
-			    color: white;
-			    padding: 10px 20px;
-			    border: none;
-			    border-radius: 6px;
-			    cursor: pointer;">
-			    ✅ Fazer novo commit
-			</button>
+	    	
+			<button th:onclick="'window.location.href = \'/upload?rep_id=' + ${repositorio.id} + '\''" class="btn-commit">	
+				✅ Fazer novo commit
+			</button>				
 	    </div>	  
 			<div id="file-list-container">
 				<div class="file-list" v-if="arquivos.length > 0">
@@ -260,20 +289,24 @@
 		    	<div v-else-if="loading" class="loading-message">
 		    		<p>Carregando arquivos...</p>
 		    	</div>
-		    	<div v-else class="no-files-message">
-		    		<p>Nenhum arquivo encontrado para este commit.</p>
-		    	</div>
 			</div>
-	      
-	    </div>
+		</div>
 	  </div>
+
+	  <script th:inline="javascript">
+		// Dados vindos do servidor via Thymeleaf
+		const serverArquivos = /*[[${arquivos}]]*/ [];
+	  </script>
 	  
 	  <script>
 	    const { createApp, ref, onMounted } = Vue;
 		createApp({
 			setup() {
 				// Dados reativos
-				const arquivos = ref([]);
+				const arquivos = ref((serverArquivos || []).map(arquivo => ({
+					id: arquivo.id,
+					nome: arquivo.nome
+				})));
 				const loading = ref(false);
 				
 				// Requisição para buscar os arquivos do commit selecionado
