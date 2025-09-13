@@ -276,6 +276,11 @@
 	    </div>	  
 			<div id="file-list-container">
 				<div class="file-list" v-if="arquivos.length > 0">
+					<div v-if="commitInfo">
+						<h3>Informações do Commit:</h3>
+						<p>ID: {{ commitInfo.id }}</p>
+						<p>Mensagem: {{ commitInfo.msg }}</p>
+						</div>						
 		        	<h3>Arquivos do Repositório:</h3>
 			          <table>
 			          	<tr>
@@ -296,6 +301,7 @@
 	  <script th:inline="javascript">
 		// Dados vindos do servidor via Thymeleaf
 		const serverArquivos = /*[[${arquivos}]]*/ [];
+		const serverCommit = /*[[${commit}]]*/ {};
 	  </script>
 	  
 	  <script>
@@ -307,6 +313,7 @@
 					id: arquivo.id,
 					nome: arquivo.nome
 				})));
+				const commitInfo = ref(serverCommit || {});
 				const loading = ref(false);
 				
 				// Requisição para buscar os arquivos do commit selecionado
@@ -317,7 +324,6 @@
 					const repId = document.getElementById('rep_id').value;
 					// Se não for passado um commitId
 					if (!commitId) {
-						console.log('Nenhum commit selecionado');
 						arquivos.value = []; // Limpar lista
 						return;
 					}
@@ -348,15 +354,38 @@
 						alert('Erro de conexão ao buscar commit');
 						arquivos.value = [];
 					} finally {
+						getCommitInfo(commitId);
 						loading.value = false;
+					}
+				};
+				// Requisição para buscar as informações do commit selecionado
+				const getCommitInfo = async (commitId) => {
+					// Se não for passado um commitId
+					if (!commitId) {
+						// Limpar as informações do commit
+						commitInfo.value = {};
+						return;
+					}
+					try {
+						// Requisição para buscar as informações do commit selecionado
+						const response = await fetch(`/api/get_commit_info?commit_id=${commitId}`);
+						const commitData = await response.json();
+						// Atualizar a variável reativa do commit com os dados do commit
+						commitInfo.value = commitData;
+					} catch (error) {
+						// Se houver um erro
+						alert('Erro de conexão ao buscar informações do commit');
+						commitInfo.value = {};
 					}
 				};
 				
 				// Retornar tudo que será usado no template Vue.js
 				return {
 					arquivos,
+					commitInfo,
 					loading,
-					getCommit
+					getCommit,
+					getCommitInfo
 				};
 			}
 		}).mount('#vue-app');

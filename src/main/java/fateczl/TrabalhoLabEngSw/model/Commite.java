@@ -1,5 +1,7 @@
 package fateczl.TrabalhoLabEngSw.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -31,14 +33,17 @@ public class Commite {
 	@Column(name = "msg", length = 100, nullable = true, unique = false)
 	private String msg;
 	
+	@JsonIgnore
 	@ManyToOne(targetEntity = Usuario.class, fetch = FetchType.LAZY)
 	@JoinColumn(name = "usuario_Autor_Id", nullable = false, unique = false)
 	private Usuario autor;
 	
+	@JsonIgnore
 	@ManyToOne(targetEntity = Commite.class, fetch = FetchType.LAZY)
 	@JoinColumn(name="commite_anterior_id", nullable = true, unique = false)
 	private Commite anterior;
 	
+	@JsonIgnore
 	@ManyToOne(targetEntity = Repositorio.class, fetch = FetchType.LAZY)
 	@JoinColumn(name="repositorio_origem_id", nullable = false, unique = false)
 	private Repositorio origem;
