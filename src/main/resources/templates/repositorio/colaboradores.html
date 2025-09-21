@@ -45,10 +45,16 @@
                     <tr>
                         <th>Nickname</th>
                         <th>Email</th>
+                        <th>Ações</th>
                     </tr>
                     <tr v-for="colaborador in colaboradores" :key="colaborador.id">
                         <td>{{ colaborador.nickname }}</td>
                         <td>{{ colaborador.email }}</td>
+                        <td>
+                            <button @click="deleteColaborador(colaborador.usuarioRepositorioId)" class="view-repo-btn-excluir">
+                                Excluir
+                            </button>
+                        </td>
                     </tr>
                 </table>
             </div>
@@ -96,9 +102,28 @@
                 if (!data.status) {
                     alert(data.msg);
                     return;
-                } else {
-                    colaboradores.value = data.colaboradores;
                 }
+                colaboradores.value = data.colaboradores;         
+                pesquisaColaborador.value = null;       
+            }
+            
+            const deleteColaborador = async (colaboradorId) => {
+                const response = await fetch('/api/deleteColaborador', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        colaboradorId: colaboradorId,
+                        rep_id: serverRepId
+                    })
+                });
+                const data = await response.json();
+                if (!data.status) {
+                    alert(data.msg);
+                    return;                
+                }
+                colaboradores.value = data.colaboradores;
             }
             
             return {
@@ -106,6 +131,7 @@
                 pesquisaColaborador,
                 buscarColaboradorByEmail,
                 adicionarColaborador,
+                deleteColaborador,
                 email
             };
         }
@@ -238,6 +264,21 @@
 
     .view-repo-btn:hover {
     background-color: #238a3b;
+    }
+
+    .view-repo-btn-excluir {
+	      background-color: #C41E3A;
+	      color: white;
+	      padding: 8px 16px;
+	      border-radius: 6px;
+	      text-decoration: none;
+	      transition: background-color 0.3s;
+	      border: none;
+	      cursor: pointer;
+    }
+
+    .view-repo-btn-excluir:hover {
+    background-color: #eb0331;
     }
 
     /* Estilo para a tela de detalhes do repositório */

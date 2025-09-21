@@ -52,4 +52,23 @@ public class UsuarioRepositorioService {
         // Salva o usuário no repositório
         rep.save(usuarioRepositorio);
     }
+    /**
+     * Exclui um colaborador do repositório
+     * @param colaboradorId
+     * @param rep_id
+     * @param user_id
+     * @throws Exception
+     */
+    public void deleteColaborador(Long colaboradorId) throws Exception {
+        // Verifica se o colaborador existe
+        Optional<UsuarioRepositorio> usuarioRepositorio = rep.findById(colaboradorId);
+        // Se não encontrar o colaborador, retorna exceção
+        if (!usuarioRepositorio.isPresent()) {
+            throw new Exception("Colaborador não encontrado.");
+        }
+        // Se encontrar o colaborador, exclui o colaborador do repositório
+        if (usuarioRepositorio.isPresent()) {
+            rep.delete(usuarioRepositorio.get());
+        }
+    }    
 }

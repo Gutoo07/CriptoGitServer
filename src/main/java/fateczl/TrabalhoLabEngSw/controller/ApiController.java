@@ -1,5 +1,6 @@
 package fateczl.TrabalhoLabEngSw.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,11 +92,60 @@ public class ApiController {
             usuarioRepositorioService.adicionarColaborador(rep_id, user_id);
             // Busca a lista de colaboradores atualizada
             List<UsuarioRepositorio> colaboradores = usuarioRepositorioRep.findByRepositorioId(rep_id);	
+			
+			// Cria uma lista simples para evitar problemas de serialização
+			List<Map<String, Object>> colaboradoresSimples = new ArrayList<>();
+			for (UsuarioRepositorio ur : colaboradores) {
+				Map<String, Object> colaborador = new HashMap<>();
+				colaborador.put("id", ur.getUsuario().getId()); // ID do usuário
+				colaborador.put("usuarioRepositorioId", ur.getId()); // ID da relação usuario_repositorio
+				colaborador.put("nickname", ur.getUsuario().getNickname());
+				colaborador.put("email", ur.getUsuario().getEmail());
+				colaboradoresSimples.add(colaborador);
+			}
+			
             // Retorna a lista de colaboradores atualizada
-            response.put("colaboradores", colaboradores);
-            response.put("status", true);
+			response.put("colaboradores", colaboradoresSimples);
+			response.put("rep_id", rep_id);
+			response.put("user_id", user_id);
+			response.put("status", true);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
+            response.put("status", false);
+            response.put("msg", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+    // Requisição para excluir o colaborador do repositório
+    @PostMapping("/deleteColaborador")
+    public ResponseEntity<Map<String, Object>> deleteColaborador(@RequestBody Map<String, Object> requestBody) {
+        Map<String, Object> response= new HashMap<>();
+        try {
+            // Pega os valores do requestBody
+            Long colaboradorId = Long.valueOf(requestBody.get("colaboradorId").toString());
+            Long rep_id = Long.valueOf(requestBody.get("rep_id").toString());
+            // Exclui o colaborador do repositório
+            usuarioRepositorioService.deleteColaborador(colaboradorId);
+            // Busca a lista de colaboradores atualizada
+            List<UsuarioRepositorio> colaboradores = usuarioRepositorioRep.findByRepositorioId(rep_id);
+            // Cria uma lista simples para evitar problemas de serialização
+			List<Map<String, Object>> colaboradoresSimples = new ArrayList<>();
+			for (UsuarioRepositorio ur : colaboradores) {
+				Map<String, Object> colaborador = new HashMap<>();
+				colaborador.put("id", ur.getUsuario().getId()); // ID do usuário
+				colaborador.put("usuarioRepositorioId", ur.getId()); // ID da relação usuario_repositorio
+				colaborador.put("nickname", ur.getUsuario().getNickname());
+				colaborador.put("email", ur.getUsuario().getEmail());
+				colaboradoresSimples.add(colaborador);
+			}
+			
+            // Retorna a lista de colaboradores atualizada
+			response.put("colaboradores", colaboradoresSimples);
+			response.put("rep_id", rep_id);
+			response.put("status", true);
+            return ResponseEntity.ok(response);
+        }
+        catch (Exception e) {
             response.put("status", false);
             response.put("msg", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);

@@ -154,7 +154,8 @@ public class RepositorioController {
 			List<Map<String, Object>> colaboradoresSimples = new ArrayList<>();
 			for (UsuarioRepositorio ur : colaboradores) {
 				Map<String, Object> colaborador = new HashMap<>();
-				colaborador.put("id", ur.getUsuario().getId());
+				colaborador.put("id", ur.getUsuario().getId()); // ID do usuário
+				colaborador.put("usuarioRepositorioId", ur.getId()); // ID da relação usuario_repositorio
 				colaborador.put("nickname", ur.getUsuario().getNickname());
 				colaborador.put("email", ur.getUsuario().getEmail());
 				colaboradoresSimples.add(colaborador);
