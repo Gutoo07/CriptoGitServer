@@ -63,4 +63,7 @@ public class UsuarioService {
 			fileOutputStream.close();
 		}
 	}
+	public Usuario buscarUsuarioByEmail(String email) {
+		return rep.findByEmail(email);
+	}
 }

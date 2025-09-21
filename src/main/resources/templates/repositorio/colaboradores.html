@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+        <title>Tela de Colaboradores do Repositório</title>    
+    </head>
+    <body>
+        <!-- Barra de navegação -->
+        <div class="navbar">
+            <div class="search-bar">
+            <input type="text" placeholder="Pesquisar repositórios...">
+            </div>
+            <a href="#" class="login-btn">Login</a>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="/index">Início</a>
+            <a href="#">Colaboradores</a>
+        </div>
+
+        <!-- Conteúdo principal -->
+        <div class="content" id="vue-app">
+            <div class="title">Lista de Colaboradores</div>
+            <input type="text" v-model="email" placeholder="Pesquisar usuário...">
+            <button @click="buscarColaboradorByEmail">Buscar</button>
+            
+            <div v-if="pesquisaColaborador" class="colaborador-card">
+                <div class="colaborador-info">
+                    <h3>{{ pesquisaColaborador.nickname }}</h3>
+                    <p>{{ pesquisaColaborador.email }}</p>
+                </div>
+                <button class="btn-add-colaborador" @click="adicionarColaborador">
+                    <span class="plus-icon">+</span>
+                </button>
+            </div>
+            
+            <div v-if="colaboradores.length == 0">
+                <p>Nenhum colaborador cadastrado neste repositório.</p>
+            </div>
+            <div v-else>
+                <table class="repo-table" style="margin-top: 20px;">
+                    <tr>
+                        <th>Nickname</th>
+                        <th>Email</th>
+                    </tr>
+                    <tr v-for="colaborador in colaboradores" :key="colaborador.id">
+                        <td>{{ colaborador.nickname }}</td>
+                        <td>{{ colaborador.email }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
+
+<script th:inline="javascript">
+    const serverColaboradores = /*[[${colaboradores}]]*/ [];
+    const serverRepId = /*[[${rep_id}]]*/ 0;
+    const serverUserId = /*[[${user_id}]]*/ 0;
+</script>
+
+<script>
+    const { createApp, ref } = Vue;
+    
+    createApp({
+        setup() {
+            const colaboradores = ref(serverColaboradores || []);
+            console.log(colaboradores.value);
+            const pesquisaColaborador = ref(null);
+            const email = ref('');
+
+            const buscarColaboradorByEmail = async () => {
+                pesquisaColaborador.value = null;
+                const response = await fetch(`/api/buscarColaboradorByEmail?email=${email.value}`);
+                const data = await response.json();
+                pesquisaColaborador.value = data;
+                console.log(pesquisaColaborador.value);
+            }
+            
+            const adicionarColaborador = async () => {
+                const response = await fetch('/api/adicionarColaborador', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        rep_id: serverRepId,
+                        user_id: pesquisaColaborador.value.id
+                    })
+                });
+                const data = await response.json();
+
+                if (!data.status) {
+                    alert(data.msg);
+                    return;
+                } else {
+                    colaboradores.value = data.colaboradores;
+                }
+            }
+            
+            return {
+                colaboradores,
+                pesquisaColaborador,
+                buscarColaboradorByEmail,
+                adicionarColaborador,
+                email
+            };
+        }
+    }).mount('#vue-app');
+</script>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f6f8fa;
+    }
+
+    /* Barra de navegação superior */
+    .navbar {
+    background-color: #24292f;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    }
+
+    .navbar .logo {
+    font-size: 24px;
+    font-weight: bold;
+    }
+
+    .navbar .search-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    margin: 0 20px;
+    }
+
+    .navbar .search-bar input {
+    padding: 5px 15px;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    width: 400px;
+    }
+
+    /* Botão de usuário/login */
+    .navbar .login-btn {
+    background-color: #2c974b;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    }
+
+    .navbar .login-btn:hover {
+    background-color: #238a3b;
+    }
+
+    /* Sidebar */
+    .sidebar {
+    width: 250px;
+    background-color: #24292f;
+    color: white;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    padding-top: 20px;
+    display: flex;
+    flex-direction: column;
+    }
+
+    .sidebar a {
+    color: white;
+    text-decoration: none;
+    padding: 12px 20px;
+    border-bottom: 1px solid #444;
+    transition: background-color 0.3s;
+    }
+
+    .sidebar a:hover {
+    background-color: #444;
+    }
+
+    /* Conteúdo principal */
+    .content {
+    margin-left: 270px;
+    padding: 20px;
+    }
+
+    .content .title {
+    font-size: 28px;
+    margin-bottom: 20px;
+    }
+
+    /* Tabela de repositórios */
+    .repo-table {
+    width: 100%;
+    border-collapse: collapse;
+    }
+
+    .repo-table th, .repo-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+    }
+
+    .repo-table th {
+    background-color: #24292f;
+    color: white;
+    }
+
+    .repo-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+    }
+
+    .repo-table tr:hover {
+    background-color: #f1f1f1;
+    }
+
+    /* Botão de ação para cada repositório */
+    .view-repo-btn {
+    background-color: #2c974b;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    }
+
+    .view-repo-btn:hover {
+    background-color: #238a3b;
+    }
+
+    /* Estilo para a tela de detalhes do repositório */
+    .repo-details {
+    margin-top: 30px;
+    }
+
+    .repo-details .version-select {
+    margin-bottom: 20px;
+    }
+
+    .repo-details .file-list {
+    list-style: none;
+    padding-left: 0;
+    }
+
+    .repo-details .file-list li {
+    padding: 8px;
+    border: 1px solid #ddd;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    }
+
+    .repo-details .file-list li:hover {
+    background-color: #f1f1f1;
+    }
+
+    .repo-details .file-list li a {
+    text-decoration: none;
+    color: #24292f;
+    }
+
+    /* Estilos para mensagens de estado */
+    .loading-message, .no-files-message {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+    }
+
+    .loading-message {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    }
+
+    .no-files-message {
+    background-color: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: 6px;
+    color: #856404;
+    }
+
+    .btn-download {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #a5a5a5;
+    border-radius: 6px;
+    color: #868686;
+    cursor: pointer;
+    margin-right: 10px;
+    }
+
+    .btn-download:hover {
+    background-color: #ebebeb;
+    border: 1px solid #a5a5a5;
+    color: #868686;
+    }
+
+    .btn-commit {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border: 1px solid #a5a5a5;
+    border-radius: 6px;
+    color: #868686;
+    cursor: pointer;
+    margin-right: 10px;
+    }
+
+    .btn-commit:hover {
+    background-color: #ebebeb;
+    border: 1px solid #a5a5a5;
+    color: #868686;
+    }
+
+    /* Estilos para o card de colaborador */
+    .colaborador-card {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #ffffff;
+        border: 1px solid #e1e4e8;
+        border-radius: 12px;
+        padding: 20px;
+        margin: 20px 0;
+        width: 400px;
+        max-width: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s ease;
+    }
+
+    .colaborador-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .colaborador-info h3 {
+        margin: 0 0 8px 0;
+        color: #24292f;
+        font-size: 18px;
+        font-weight: 600;
+    }
+
+    .colaborador-info p {
+        margin: 0;
+        color: #656d76;
+        font-size: 14px;
+    }
+
+    .btn-add-colaborador {
+        background-color: #2c974b;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-add-colaborador:hover {
+        background-color: #238a3b;
+    }
+
+    .plus-icon {
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>

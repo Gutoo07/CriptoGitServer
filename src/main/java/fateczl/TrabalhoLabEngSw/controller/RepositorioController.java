@@ -1,6 +1,8 @@
 package fateczl.TrabalhoLabEngSw.controller;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +20,9 @@ import fateczl.TrabalhoLabEngSw.model.Commite;
 import fateczl.TrabalhoLabEngSw.model.Diretorio;
 import fateczl.TrabalhoLabEngSw.model.Repositorio;
 import fateczl.TrabalhoLabEngSw.model.Usuario;
+import fateczl.TrabalhoLabEngSw.model.UsuarioRepositorio;
 import fateczl.TrabalhoLabEngSw.persistence.RepositorioRepository;
+import fateczl.TrabalhoLabEngSw.persistence.UsuarioRepositorioRepository;
 import fateczl.TrabalhoLabEngSw.service.RepositorioService;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -35,7 +39,9 @@ public class RepositorioController {
 	private CommitController comControl;
 	@Autowired
 	private DiretorioController dirControl;
-	
+	@Autowired
+	private UsuarioRepositorioRepository usuarioRepositorioRep;
+
 	@GetMapping("/listagem")
 	public ModelAndView carregaRepositorios(@CookieValue(name = "user_id",defaultValue = "") String user_id) {
 		ModelAndView mv = new ModelAndView();
@@ -100,6 +106,7 @@ public class RepositorioController {
 	    mv.setViewName("repositorio/acessar");
 	    return mv;
 	}
+
 	@GetMapping("/excluirRepositorio")
 	public ModelAndView excluirRepositorio(@RequestParam Map<String, String> params, @CookieValue(name = "user_id", defaultValue = "") String user_id) {
 		String rep_id = params.get("rep_id");
@@ -132,6 +139,39 @@ public class RepositorioController {
 		//mv.setViewName("repositorio/listagem");		
 		mv.setViewName("redirect:listagem");
 		//mv.addObject("listaRep", lista);
+		return mv;
+	}
+
+	@GetMapping("/colaboradores")
+	public ModelAndView colaboradores(@RequestParam(name = "rep_id", required = true) Long repId,
+			@CookieValue(name = "user_id", defaultValue = "") String user_id) {
+		ModelAndView mv = new ModelAndView();
+		try {
+			// Busca a lista de colaboradores do repositório
+			List<UsuarioRepositorio> colaboradores = usuarioRepositorioRep.findByRepositorioId(repId);
+			
+			// Cria uma lista simples para evitar problemas de serialização
+			List<Map<String, Object>> colaboradoresSimples = new ArrayList<>();
+			for (UsuarioRepositorio ur : colaboradores) {
+				Map<String, Object> colaborador = new HashMap<>();
+				colaborador.put("id", ur.getUsuario().getId());
+				colaborador.put("nickname", ur.getUsuario().getNickname());
+				colaborador.put("email", ur.getUsuario().getEmail());
+				colaboradoresSimples.add(colaborador);
+			}
+			
+			mv.addObject("colaboradores", colaboradoresSimples);
+			mv.addObject("rep_id", repId);
+			mv.addObject("user_id", user_id);
+			mv.setViewName("repositorio/colaboradores");
+		} catch (Exception e) {
+			// Se houver erro, cria uma lista vazia
+			e.printStackTrace();
+			mv.addObject("colaboradores", new ArrayList<>());
+			mv.addObject("rep_id", repId);
+			mv.addObject("user_id", user_id);
+			mv.setViewName("repositorio/colaboradores");
+		}
 		return mv;
 	}
 	
