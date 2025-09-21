@@ -107,7 +107,7 @@ begin
 	end
 end
 
-select id as usuario, nickname from usuario
+select id as usuario, nickname, email from usuario
 select id as repositorio, nome, chave_simetrica, usuario_dono_id from repositorio
 select id as commite, msg, commite_anterior_id as commit_anterior, usuario_autor_id, repositorio_origem_Id from commite
 select id as diretorio, nome, commite_id, diretorio_pai_id from diretorio
