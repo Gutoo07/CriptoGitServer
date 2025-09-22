@@ -26,16 +26,9 @@ public class UsuarioService {
 		if(rep.findByEmail(novo.getEmail()) != null) {
 			throw new Exception("Este email ja esta cadastrado: "+novo.getEmail());
 		}
-		KeyPair keyPair = gerarRsaKeyPair();
-		PublicKey chavePublica = keyPair.getPublic();
-		byte[] chavePublicaArray = chavePublica.getEncoded();
-		novo.setChavePublica(chavePublicaArray);
-		
-		PrivateKey chavePrivada = keyPair.getPrivate();
-		byte[] chavePrivadaArray = chavePrivada.getEncoded();
-		
-		String nomeArquivoChavePrivada = "ChavePrivada-"+novo.getNickname();
-		salvarChaveEmArquivo(nomeArquivoChavePrivada, chavePrivadaArray);
+		if (novo.getNickname().contains(" ")) {
+			throw new Exception("O nickname não pode conter espacos.");
+		}
 
 		rep.save(novo);
 	}

@@ -46,9 +46,16 @@ public class UsuarioController {
 	@PostMapping("/salvarUsuario")
 	public ModelAndView cadastrar(Usuario usuario) throws Exception {
 		ModelAndView mv = new ModelAndView();
-		service.salvarUsuario(usuario);
-		mv.setViewName("redirect:/");
-		return mv;
+		try {
+			service.salvarUsuario(usuario);
+			mv.setViewName("redirect:/");
+			return mv;
+		} catch (Exception e) {
+			mv.setViewName("login/cadastro");
+			mv.addObject("usuario", usuario);
+			mv.addObject("msg", e.getMessage());
+			return mv;
+		}
 	}
 
 	@PostMapping("/login")

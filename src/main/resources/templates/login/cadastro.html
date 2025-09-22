@@ -12,6 +12,15 @@
       background-color: #f6f8fa;
     }
 
+    .alert {
+      margin-bottom: 15px;
+      padding: 10px;
+      color: #721c24;
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 4px;
+    }
+
     .navbar {
       background-color: #24292f;
       color: white;
@@ -99,6 +108,10 @@
   <div class="content">
     <div class="form-container">
       <h2>Cadastro</h2>
+
+      <div class="alert" th:if="${msg}">
+        <strong th:text="${msg}"></strong>
+      </div>
 
       <form method="post" th:action="@{/salvarUsuario}" th:object="${usuario}">
         <div class="form-group">
