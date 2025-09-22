@@ -97,7 +97,7 @@
 
 	    /* Tabela de repositórios */
 	    .repo-table {
-	      width: 100%;
+	      width: 50%;
 	      border-collapse: collapse;
 	    }
 
@@ -204,16 +204,14 @@
 	      <table v-if="repositoriesCount > 0" class="repo-table">
 	        <thead>
 	          <tr>
-	            <th>ID</th>
 	            <th>Nome do Repositório</th>
 	            <th>Ações</th>
 	          </tr>
 	        </thead>
 	        <tbody>
 	          <tr v-for="repo in repositories" :key="repo.id">
-	            <td>{{ repo.id }}</td>
-	            <td>{{ repo.nome }}</td>
-	            <td>
+	            <td style="width: 300px;">{{ repo.nome }}</td>
+	            <td style="width: 18%;">
 	              <button @click="openRepository(repo.id)" class="view-repo-btn">
 	                Abrir
 	              </button>
@@ -224,11 +222,34 @@
 	          </tr>
 	        </tbody>
 	      </table>
+		  
+			<div v-else class="empty-state">
+			  <h3>Nenhum repositório encontrado</h3>
+			  <p>Não há repositórios cadastrados no sistema.</p>	        
+			</div>
 
-	      <div v-else class="empty-state">
-	        <h3>Nenhum repositório encontrado</h3>
-	        <p>Não há repositórios cadastrados no sistema.</p>	        
-	      </div>
+			<div v-if="repositoriesColaboradosCount > 0" class="title" style="margin-bottom: 20px; margin-top: 20px;">
+				Colaborando em:
+			</div>
+
+			<table v-if="repositoriesColaboradosCount > 0" class="repo-table">
+			  <thead>
+				<tr>
+				  <th>Nome do Repositório</th>
+				  <th>Ações</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				  <tr v-for="repo in repositoriesColaborados" :key="repo.id">
+					  <td>{{ repo.nome }}</td>
+					  <td>
+						  <button @click="openRepository(repo.id)" class="view-repo-btn">
+							  Abrir
+						  </button>
+					  </td>
+				  </tr>
+			  </tbody>
+			</table>
 	    </div>
 	  </div>
 
@@ -236,6 +257,8 @@
 		// Dados vindos do servidor via Thymeleaf
 		const serverRepositories = /*[[${repositories}]]*/ [];
 		const serverRepositoriesCount = /*[[${repositoriesCount}]]*/ 0;
+		const serverRepositoriesColaborados = /*[[${repositoriesColaborados}]]*/ [];
+		const serverRepositoriesColaboradosCount = /*[[${repositoriesColaboradosCount}]]*/ 0;
 	  </script>
 	  
 	  <script>
@@ -250,6 +273,11 @@
 					descricao: repo.descricao
 				})));
 				const repositoriesCount = ref(serverRepositoriesCount);
+				const repositoriesColaborados = reactive(serverRepositoriesColaborados.map(repo => ({
+					id: repo.id,
+					nome: repo.nome
+				})));
+				const repositoriesColaboradosCount = ref(serverRepositoriesColaboradosCount);
 				const error = ref('');
 				
 				// Função para abrir repositório
@@ -287,6 +315,8 @@
 				return {
 					repositories,
 					repositoriesCount,
+					repositoriesColaborados,
+					repositoriesColaboradosCount,
 					error,
 					openRepository,
 					deleteRepository

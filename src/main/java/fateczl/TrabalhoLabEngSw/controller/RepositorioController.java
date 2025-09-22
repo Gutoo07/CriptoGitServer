@@ -47,14 +47,37 @@ public class RepositorioController {
 		ModelAndView mv = new ModelAndView();
 		mv.setViewName("repositorio/listagem");
 		
-		// Carregar repositórios do banco de dados
 		Usuario usuario = new Usuario();
 		usuario.setId(Long.valueOf(user_id));
+		
+		// Carregar repositórios e criar DTOs simples
 		List<Repositorio> lista = repRep.findByUsuario(usuario);
+		List<Map<String, Object>> repositoriesDTO = new ArrayList<>();
+		for (Repositorio repo : lista) {
+			Map<String, Object> repoDTO = new HashMap<>();
+			repoDTO.put("id", repo.getId());
+			repoDTO.put("nome", repo.getNome());
+			repositoriesDTO.add(repoDTO);
+		}
+		
+		// Carregar repositórios colaborados e criar DTOs simples
+		List<UsuarioRepositorio> listaUsuarioRepositorio = usuarioRepositorioRep.findByUsuario(usuario);
+		List<Map<String, Object>> repositoriesColaboradosDTO = new ArrayList<>();
+		for (UsuarioRepositorio ur : listaUsuarioRepositorio) {
+			Optional<Repositorio> repositorio = repRep.findById(ur.getRepositorio().getId());
+			if (repositorio.isPresent()) {
+				Map<String, Object> repoDTO = new HashMap<>();
+				repoDTO.put("id", repositorio.get().getId());
+				repoDTO.put("nome", repositorio.get().getNome());
+				repositoriesColaboradosDTO.add(repoDTO);
+			}
+		}
 		
 		// Passar dados para o frontend via Thymeleaf
-		mv.addObject("repositories", lista);
-		mv.addObject("repositoriesCount", lista.size());
+		mv.addObject("repositories", repositoriesDTO);
+		mv.addObject("repositoriesCount", repositoriesDTO.size());
+		mv.addObject("repositoriesColaborados", repositoriesColaboradosDTO);
+		mv.addObject("repositoriesColaboradosCount", repositoriesColaboradosDTO.size());
 		
 		return mv;
 	}
