@@ -187,7 +187,7 @@
 	  <div class="content" id="vue-app">
 	    <div class="title">Lista de Repositórios</div>
 
-	    <div v-if="error" class="error">
+	    <div v-if="error && error.length > 0" class="error">
 	      <strong>Erro ao carregar repositórios:</strong>
 	      <p>{{ error }}</p>
 	      <button @click="loadRepositories" style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 3px;">
@@ -197,11 +197,11 @@
 
 	    <!-- Tabela de Repositórios -->
 	    <div>
-	      <div v-if="repositories.length > 0" style="margin-bottom: 20px;">
-	        <span style="color: #666;">Total: {{ repositories.length }} repositórios</span>
+	      <div v-if="repositoriesCount > 0" style="margin-bottom: 20px;">
+	        <span style="color: #666;">Total: {{ repositoriesCount }} repositórios</span>
 	      </div>
 
-	      <table v-if="repositories.length > 0" class="repo-table">
+	      <table v-if="repositoriesCount > 0" class="repo-table">
 	        <thead>
 	          <tr>
 	            <th>ID</th>
@@ -239,7 +239,7 @@
 	  </script>
 	  
 	  <script>
-		const { createApp, ref, reactive, onMounted } = Vue;
+		const { createApp, ref, reactive, onMounted, nextTick } = Vue;
 		
 		createApp({
 			setup() {
@@ -249,7 +249,8 @@
 					nome: repo.nome,
 					descricao: repo.descricao
 				})));
-				const error = ref(null);
+				const repositoriesCount = ref(serverRepositoriesCount);
+				const error = ref('');
 				
 				// Função para abrir repositório
 				const openRepository = (repoId) => {
@@ -282,14 +283,10 @@
 					}
 				};
 				
-				// Dados já vêm direto do servidor ao carregar a página, não precisa carregar no onMounted
-				// onMounted(() => {
-				//   loadRepositories();
-				// });
-				
 				// Retornar tudo que será usado no template Vue.js
 				return {
 					repositories,
+					repositoriesCount,
 					error,
 					openRepository,
 					deleteRepository
